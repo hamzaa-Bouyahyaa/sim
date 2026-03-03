@@ -26,9 +26,11 @@ export function usePanelResize() {
   useEffect(() => {
     if (!isResizing) return
 
+    const isRTL = document.documentElement.dir === 'rtl'
+
     const handleMouseMove = (e: MouseEvent) => {
-      // Calculate width from the right edge of the viewport
-      const newWidth = window.innerWidth - e.clientX
+      // Calculate width from the edge where the panel is positioned
+      const newWidth = isRTL ? e.clientX : window.innerWidth - e.clientX
       const maxWidth = window.innerWidth * PANEL_WIDTH.MAX_PERCENTAGE
 
       if (newWidth >= PANEL_WIDTH.MIN && newWidth <= maxWidth) {

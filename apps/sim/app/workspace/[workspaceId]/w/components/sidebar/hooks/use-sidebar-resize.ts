@@ -26,8 +26,10 @@ export function useSidebarResize() {
   useEffect(() => {
     if (!isResizing) return
 
+    const isRTL = document.documentElement.dir === 'rtl'
+
     const handleMouseMove = (e: MouseEvent) => {
-      const newWidth = e.clientX
+      const newWidth = isRTL ? window.innerWidth - e.clientX : e.clientX
       const maxWidth = window.innerWidth * SIDEBAR_WIDTH.MAX_PERCENTAGE
 
       if (newWidth >= SIDEBAR_WIDTH.MIN && newWidth <= maxWidth) {
