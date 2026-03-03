@@ -28,41 +28,35 @@ import { useWorkflowRegistry } from '@/stores/workflows/registry/store'
 import { useTranslation } from '@/hooks/use-translation'
 import { AutocompleteSearch } from './components/search'
 
-const TIME_RANGE_OPTIONS: ComboboxOption[] = [
-  { value: 'All time', label: 'All time' },
-  { value: 'Past 30 minutes', label: 'Past 30 minutes' },
-  { value: 'Past hour', label: 'Past hour' },
-  { value: 'Past 6 hours', label: 'Past 6 hours' },
-  { value: 'Past 12 hours', label: 'Past 12 hours' },
-  { value: 'Past 24 hours', label: 'Past 24 hours' },
-  { value: 'Past 3 days', label: 'Past 3 days' },
-  { value: 'Past 7 days', label: 'Past 7 days' },
-  { value: 'Past 14 days', label: 'Past 14 days' },
-  { value: 'Past 30 days', label: 'Past 30 days' },
-  { value: 'Custom range', label: 'Custom range' },
+const TIME_RANGE_KEYS = [
+  'allTime',
+  'past30Min',
+  'pastHour',
+  'past6Hours',
+  'past12Hours',
+  'past24Hours',
+  'past3Days',
+  'past7Days',
+  'past14Days',
+  'past30Days',
+  'customRange',
 ] as const
 
-/**
- * Formats a date string (YYYY-MM-DD) for display.
- */
-function formatDateShort(dateStr: string): string {
-  const date = new Date(dateStr)
-  const months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ]
-  return `${months[date.getMonth()]} ${date.getDate()}`
-}
+const TIME_RANGE_VALUES = [
+  'All time',
+  'Past 30 minutes',
+  'Past hour',
+  'Past 6 hours',
+  'Past 12 hours',
+  'Past 24 hours',
+  'Past 3 days',
+  'Past 7 days',
+  'Past 14 days',
+  'Past 30 days',
+  'Custom range',
+] as const
+
+const MONTH_KEYS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] as const
 
 type ViewMode = 'logs' | 'dashboard'
 
@@ -192,6 +186,23 @@ export const LogsToolbar = memo(function LogsToolbar({
   const [previousTimeRange, setPreviousTimeRange] = useState(timeRange)
   const folders = useFolderStore((state) => state.folders)
 
+  const timeRangeOptions: ComboboxOption[] = useMemo(
+    () =>
+      TIME_RANGE_KEYS.map((key, i) => ({
+        value: TIME_RANGE_VALUES[i],
+        label: t(`logs.toolbar.timeRange.${key}`),
+      })),
+    [t]
+  )
+
+  const formatDateShort = useCallback(
+    (dateStr: string): string => {
+      const date = new Date(dateStr)
+      return `${t(`logs.toolbar.months.${MONTH_KEYS[date.getMonth()]}`)} ${date.getDate()}`
+    },
+    [t]
+  )
+
   const allWorkflows = useWorkflowRegistry((state) => state.workflows)
 
   const workflows = useMemo(() => {
@@ -217,10 +228,10 @@ export const LogsToolbar = memo(function LogsToolbar({
     () =>
       (Object.keys(STATUS_CONFIG) as LogStatus[]).map((status) => ({
         value: status,
-        label: STATUS_CONFIG[status].label,
+        label: t(STATUS_CONFIG[status].labelKey),
         icon: getColorIcon(STATUS_CONFIG[status].color),
       })),
-    []
+    [t]
   )
 
   const handleStatusChange = useCallback(
@@ -238,9 +249,9 @@ export const LogsToolbar = memo(function LogsToolbar({
     if (selectedStatuses.length === 0) return t('logs.toolbar.statusFilter')
     if (selectedStatuses.length === 1) {
       const status = statusOptions.find((s) => s.value === selectedStatuses[0])
-      return status?.label || '1 selected'
+      return status?.label || `1 ${t('logs.toolbar.selected')}`
     }
-    return `${selectedStatuses.length} selected`
+    return `${selectedStatuses.length} ${t('logs.toolbar.selected')}`
   }, [selectedStatuses, statusOptions, t])
 
   const selectedStatusColor = useMemo(() => {
@@ -258,9 +269,9 @@ export const LogsToolbar = memo(function LogsToolbar({
     if (workflowIds.length === 0) return t('logs.toolbar.workflowFilter')
     if (workflowIds.length === 1) {
       const workflow = workflows.find((w) => w.id === workflowIds[0])
-      return workflow?.name || '1 selected'
+      return workflow?.name || `1 ${t('logs.toolbar.selected')}`
     }
-    return `${workflowIds.length} workflows`
+    return `${workflowIds.length} ${t('logs.toolbar.selected')}`
   }, [workflowIds, workflows, t])
 
   const selectedWorkflow =
@@ -275,9 +286,9 @@ export const LogsToolbar = memo(function LogsToolbar({
     if (folderIds.length === 0) return t('logs.toolbar.folderFilter')
     if (folderIds.length === 1) {
       const folder = folderList.find((f) => f.id === folderIds[0])
-      return folder?.name || '1 selected'
+      return folder?.name || `1 ${t('logs.toolbar.selected')}`
     }
-    return `${folderIds.length} folders`
+    return `${folderIds.length} ${t('logs.toolbar.selected')}`
   }, [folderIds, folderList, t])
 
   const triggerOptions: ComboboxOption[] = useMemo(
@@ -294,9 +305,9 @@ export const LogsToolbar = memo(function LogsToolbar({
     if (triggers.length === 0) return t('logs.toolbar.triggerFilter')
     if (triggers.length === 1) {
       const triggerOpt = triggerOptions.find((opt) => opt.value === triggers[0])
-      return triggerOpt?.label || '1 selected'
+      return triggerOpt?.label || `1 ${t('logs.toolbar.selected')}`
     }
-    return `${triggers.length} triggers`
+    return `${triggers.length} ${t('logs.toolbar.selected')}`
   }, [triggers, triggerOptions, t])
 
   const timeDisplayLabel = useMemo(() => {
@@ -600,7 +611,7 @@ export const LogsToolbar = memo(function LogsToolbar({
                     {t('logs.toolbar.timeFilter')}
                   </span>
                   <Combobox
-                    options={TIME_RANGE_OPTIONS as unknown as ComboboxOption[]}
+                    options={timeRangeOptions}
                     value={timeRange}
                     onChange={handleTimeRangeChange}
                     placeholder={t('logs.toolbar.allTime')}
@@ -714,7 +725,7 @@ export const LogsToolbar = memo(function LogsToolbar({
               <PopoverAnchor asChild>
                 <div>
                   <Combobox
-                    options={TIME_RANGE_OPTIONS as unknown as ComboboxOption[]}
+                    options={timeRangeOptions}
                     value={timeRange}
                     onChange={handleTimeRangeChange}
                     placeholder={t('logs.toolbar.timeFilter')}

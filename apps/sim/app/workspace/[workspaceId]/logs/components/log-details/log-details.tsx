@@ -28,7 +28,7 @@ import {
 import { useLogDetailsResize } from '@/app/workspace/[workspaceId]/logs/hooks'
 import {
   DELETED_WORKFLOW_COLOR,
-  DELETED_WORKFLOW_LABEL,
+  DELETED_WORKFLOW_LABEL_KEY,
   formatDate,
   getDisplayStatus,
   StatusBadge,
@@ -421,7 +421,7 @@ export const LogDetails = memo(function LogDetails({
                       />
                       <span className='min-w-0 flex-1 truncate font-medium text-[14px] text-[var(--text-secondary)]'>
                         {log.workflow?.name ||
-                          (!log.workflowId ? DELETED_WORKFLOW_LABEL : t('logs.details.unknown'))}
+                          (!log.workflowId ? t(DELETED_WORKFLOW_LABEL_KEY) : t('logs.details.unknown'))}
                       </span>
                     </div>
                   </div>
@@ -592,8 +592,8 @@ export const LogDetails = memo(function LogDetails({
                             {t('logs.details.tokens')}
                           </span>
                           <span className='font-medium text-[12px] text-[var(--text-secondary)]'>
-                            {log.cost?.tokens?.input || log.cost?.tokens?.prompt || 0} in /{' '}
-                            {log.cost?.tokens?.output || log.cost?.tokens?.completion || 0} out
+                            {log.cost?.tokens?.input || log.cost?.tokens?.prompt || 0} {t('logs.details.tokenIn')} /{' '}
+                            {log.cost?.tokens?.output || log.cost?.tokens?.completion || 0} {t('logs.details.tokenOut')}
                           </span>
                         </div>
                       </div>

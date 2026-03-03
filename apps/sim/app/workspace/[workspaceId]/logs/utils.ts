@@ -3,17 +3,18 @@ import { format } from 'date-fns'
 import { Badge } from '@/components/emcn'
 import { formatDuration } from '@/lib/core/utils/formatting'
 import { getIntegrationMetadata } from '@/lib/logs/get-trigger-options'
+import { useTranslation } from '@/hooks/use-translation'
 import { getBlock } from '@/blocks/registry'
 import { CORE_TRIGGER_TYPES } from '@/stores/logs/filters/types'
 
 export const LOG_COLUMNS = {
-  date: { width: 'w-[8%]', minWidth: 'min-w-[70px]', label: 'Date' },
-  time: { width: 'w-[12%]', minWidth: 'min-w-[90px]', label: 'Time' },
-  status: { width: 'w-[12%]', minWidth: 'min-w-[100px]', label: 'Status' },
-  workflow: { width: 'w-[22%]', minWidth: 'min-w-[140px]', label: 'Workflow' },
-  cost: { width: 'w-[12%]', minWidth: 'min-w-[90px]', label: 'Cost' },
-  trigger: { width: 'w-[14%]', minWidth: 'min-w-[110px]', label: 'Trigger' },
-  duration: { width: 'w-[20%]', minWidth: 'min-w-[100px]', label: 'Duration' },
+  date: { width: 'w-[8%]', minWidth: 'min-w-[70px]', labelKey: 'logs.columns.date' },
+  time: { width: 'w-[12%]', minWidth: 'min-w-[90px]', labelKey: 'logs.columns.time' },
+  status: { width: 'w-[12%]', minWidth: 'min-w-[100px]', labelKey: 'logs.columns.status' },
+  workflow: { width: 'w-[22%]', minWidth: 'min-w-[140px]', labelKey: 'logs.columns.workflow' },
+  cost: { width: 'w-[12%]', minWidth: 'min-w-[90px]', labelKey: 'logs.columns.cost' },
+  trigger: { width: 'w-[14%]', minWidth: 'min-w-[110px]', labelKey: 'logs.columns.trigger' },
+  duration: { width: 'w-[20%]', minWidth: 'min-w-[100px]', labelKey: 'logs.columns.duration' },
 } as const
 
 export type LogColumnKey = keyof typeof LOG_COLUMNS
@@ -29,6 +30,7 @@ export const LOG_COLUMN_ORDER: readonly LogColumnKey[] = [
 ] as const
 
 export const DELETED_WORKFLOW_LABEL = 'Deleted Workflow'
+export const DELETED_WORKFLOW_LABEL_KEY = 'logs.deletedWorkflow'
 export const DELETED_WORKFLOW_COLOR = 'var(--text-tertiary)'
 
 export type LogStatus = 'error' | 'pending' | 'running' | 'info' | 'cancelled'
@@ -55,13 +57,13 @@ export function getDisplayStatus(status: string | null | undefined): LogStatus {
 
 export const STATUS_CONFIG: Record<
   LogStatus,
-  { variant: React.ComponentProps<typeof Badge>['variant']; label: string; color: string }
+  { variant: React.ComponentProps<typeof Badge>['variant']; labelKey: string; color: string }
 > = {
-  error: { variant: 'red', label: 'Error', color: 'var(--text-error)' },
-  pending: { variant: 'amber', label: 'Pending', color: '#f59e0b' },
-  running: { variant: 'green', label: 'Running', color: '#22c55e' },
-  cancelled: { variant: 'orange', label: 'Cancelled', color: '#f97316' },
-  info: { variant: 'gray', label: 'Info', color: 'var(--terminal-status-info-color)' },
+  error: { variant: 'red', labelKey: 'logs.status.error', color: 'var(--text-error)' },
+  pending: { variant: 'amber', labelKey: 'logs.status.pending', color: '#f59e0b' },
+  running: { variant: 'green', labelKey: 'logs.status.running', color: '#22c55e' },
+  cancelled: { variant: 'orange', labelKey: 'logs.status.cancelled', color: '#f97316' },
+  info: { variant: 'gray', labelKey: 'logs.status.info', color: 'var(--terminal-status-info-color)' },
 }
 
 const TRIGGER_VARIANT_MAP: Record<string, React.ComponentProps<typeof Badge>['variant']> = {
@@ -85,8 +87,9 @@ interface StatusBadgeProps {
  * @returns A Badge with dot indicator and status label
  */
 export const StatusBadge = React.memo(({ status }: StatusBadgeProps) => {
+  const { t } = useTranslation()
   const config = STATUS_CONFIG[status]
-  return React.createElement(Badge, { variant: config.variant, dot: true }, config.label)
+  return React.createElement(Badge, { variant: config.variant, dot: true }, t(config.labelKey))
 })
 
 StatusBadge.displayName = 'StatusBadge'
@@ -101,26 +104,41 @@ interface TriggerBadgeProps {
  * @param props - Component props containing the trigger type
  * @returns A Badge with appropriate styling for the trigger type
  */
+const CORE_TRIGGER_LABEL_KEYS: Record<string, string> = {
+  manual: 'logs.trigger.manual',
+  api: 'logs.trigger.api',
+  schedule: 'logs.trigger.schedule',
+  chat: 'logs.trigger.chat',
+  form: 'logs.trigger.form',
+  webhook: 'logs.trigger.webhook',
+  mcp: 'logs.trigger.mcp',
+  a2a: 'logs.trigger.a2a',
+  copilot: 'logs.trigger.copilot',
+}
+
 export const TriggerBadge = React.memo(({ trigger }: TriggerBadgeProps) => {
+  const { t } = useTranslation()
   const metadata = getIntegrationMetadata(trigger)
   const isIntegration = !(CORE_TRIGGER_TYPES as readonly string[]).includes(trigger)
   const block = isIntegration ? getBlock(trigger) : null
   const IconComponent = block?.icon
 
+  const label = CORE_TRIGGER_LABEL_KEYS[trigger] ? t(CORE_TRIGGER_LABEL_KEYS[trigger]) : metadata.label
+
   const coreVariant = TRIGGER_VARIANT_MAP[trigger]
   if (coreVariant) {
-    return React.createElement(Badge, { variant: coreVariant }, metadata.label)
+    return React.createElement(Badge, { variant: coreVariant }, label)
   }
 
   if (IconComponent) {
     return React.createElement(
       Badge,
       { variant: 'gray-secondary', icon: IconComponent },
-      metadata.label
+      label
     )
   }
 
-  return React.createElement(Badge, { variant: 'gray-secondary' }, metadata.label)
+  return React.createElement(Badge, { variant: 'gray-secondary' }, label)
 })
 
 TriggerBadge.displayName = 'TriggerBadge'
@@ -376,8 +394,9 @@ export function formatLatency(ms: number): string {
 
 export const formatDate = (dateString: string) => {
   const date = new Date(dateString)
+  const lang = typeof document !== 'undefined' ? document.documentElement.lang || 'en' : 'en'
   return {
-    full: date.toLocaleDateString('en-US', {
+    full: date.toLocaleDateString(lang, {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -386,16 +405,16 @@ export const formatDate = (dateString: string) => {
       second: '2-digit',
       hour12: false,
     }),
-    time: date.toLocaleTimeString([], {
+    time: date.toLocaleTimeString(lang, {
       hour: '2-digit',
       minute: '2-digit',
       second: '2-digit',
       hour12: false,
     }),
     formatted: format(date, 'HH:mm:ss'),
-    compact: format(date, 'MMM d HH:mm:ss'),
-    compactDate: format(date, 'MMM d').toUpperCase(),
-    compactTime: format(date, 'h:mm a'),
+    compact: date.toLocaleDateString(lang, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }),
+    compactDate: date.toLocaleDateString(lang, { month: 'short', day: 'numeric' }).toUpperCase(),
+    compactTime: date.toLocaleTimeString(lang, { hour: 'numeric', minute: '2-digit', hour12: true }),
     relative: (() => {
       const now = new Date()
       const diffMs = now.getTime() - date.getTime()

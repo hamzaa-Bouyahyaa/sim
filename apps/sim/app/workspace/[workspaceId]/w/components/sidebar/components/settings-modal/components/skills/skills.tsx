@@ -121,7 +121,7 @@ export function Skills() {
           {error ? (
             <div className='flex h-full flex-col items-center justify-center gap-[8px]'>
               <p className='text-[#DC2626] text-[11px] leading-tight dark:text-[#F87171]'>
-                {error instanceof Error ? error.message : 'Failed to load skills'}
+                {error instanceof Error ? error.message : t('settings.skills.failedLoad')}
               </p>
             </div>
           ) : isLoading ? (
@@ -132,7 +132,7 @@ export function Skills() {
             </div>
           ) : showEmptyState ? (
             <div className='flex h-full items-center justify-center text-[13px] text-[var(--text-muted)]'>
-              Click "Add" above to get started
+              {t('settings.skills.emptyState')}
             </div>
           ) : (
             <div className='flex flex-col gap-[8px]'>
@@ -158,7 +158,7 @@ export function Skills() {
               ))}
               {showNoResults && (
                 <div className='py-[16px] text-center text-[13px] text-[var(--text-muted)]'>
-                  No skills found matching "{searchTerm}"
+                  {t('settings.skills.noResults').replace('{term}', searchTerm)}
                 </div>
               )}
             </div>
@@ -187,9 +187,9 @@ export function Skills() {
           <ModalHeader>{t('common.delete')}</ModalHeader>
           <ModalBody>
             <p className='text-[12px] text-[var(--text-secondary)]'>
-              Are you sure you want to delete{' '}
+              {t('common.deleteConfirm')}{' '}
               <span className='font-medium text-[var(--text-primary)]'>{skillToDelete?.name}</span>?{' '}
-              <span className='text-[var(--text-error)]'>This action cannot be undone.</span>
+              <span className='text-[var(--text-error)]'>{t('common.cannotBeUndone')}</span>
             </p>
           </ModalBody>
           <ModalFooter>

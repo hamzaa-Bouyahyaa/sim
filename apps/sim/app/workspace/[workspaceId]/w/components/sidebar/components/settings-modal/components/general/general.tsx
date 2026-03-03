@@ -195,7 +195,7 @@ export function General({ onOpenChange }: GeneralProps) {
         })
         .catch(() => {
           setUploadError(
-            url ? 'Failed to update profile picture' : 'Failed to remove profile picture'
+            url ? t('settings.general.failedUpdatePicture') : t('settings.general.failedRemovePicture')
           )
         })
     },
@@ -291,7 +291,7 @@ export function General({ onOpenChange }: GeneralProps) {
       }, 1500)
     } catch (error) {
       logger.error('Error resetting password:', error)
-      setResetPasswordError('Failed to send email')
+      setResetPasswordError(t('settings.general.failedSendEmail'))
 
       setTimeout(() => {
         setResetPasswordError(null)
@@ -485,9 +485,9 @@ export function General({ onOpenChange }: GeneralProps) {
             onChange={handleThemeChange}
             placeholder={t('settings.general.selectTheme')}
             options={[
-              { label: 'System', value: 'system' },
-              { label: 'Light', value: 'light' },
-              { label: 'Dark', value: 'dark' },
+              { label: t('settings.general.system'), value: 'system' },
+              { label: t('settings.general.light'), value: 'light' },
+              { label: t('settings.general.dark'), value: 'dark' },
             ]}
           />
         </div>
@@ -522,7 +522,7 @@ export function General({ onOpenChange }: GeneralProps) {
             onChange={handleSnapToGridChange}
             placeholder={t('settings.general.selectSize')}
             options={[
-              { label: 'Off', value: '0' },
+              { label: t('settings.general.off'), value: '0' },
               { label: '10px', value: '10' },
               { label: '20px', value: '20' },
               { label: '30px', value: '30' },
@@ -552,8 +552,7 @@ export function General({ onOpenChange }: GeneralProps) {
       </div>
 
       <p className='-mt-[8px] text-[12px] text-[var(--text-muted)]'>
-        We use OpenTelemetry to collect anonymous usage data to improve Sim. You can opt-out at any
-        time.
+        {t('settings.general.telemetryDescription')}
       </p>
 
       {isTrainingEnabled && (
@@ -582,7 +581,7 @@ export function General({ onOpenChange }: GeneralProps) {
         {!isAuthDisabled && (
           <>
             <Button onClick={handleSignOut} variant='active'>
-              Sign out
+              {t('settings.general.signOut')}
             </Button>
             <Button onClick={() => setShowResetPasswordModal(true)} variant='active'>
               {t('settings.general.resetPassword')}
@@ -595,7 +594,7 @@ export function General({ onOpenChange }: GeneralProps) {
             variant='active'
             className='ml-auto'
           >
-            Home Page
+            {t('settings.general.homePage')}
           </Button>
         )}
       </div>
@@ -606,9 +605,9 @@ export function General({ onOpenChange }: GeneralProps) {
           <ModalHeader>{t('settings.general.resetPassword')}</ModalHeader>
           <ModalBody>
             <p className='text-[12px] text-[var(--text-secondary)]'>
-              A password reset link will be sent to{' '}
-              <span className='font-medium text-[var(--text-primary)]'>{profile?.email}</span>.
-              Click the link in the email to create a new password.
+              {t('settings.general.resetEmailBefore')}{' '}
+              <span className='font-medium text-[var(--text-primary)]'>{profile?.email}</span>.{' '}
+              {t('settings.general.resetEmailAfter')}
             </p>
             {resetPasswordError && (
               <p className='mt-[8px] text-[12px] text-[var(--text-error)]'>{resetPasswordError}</p>
@@ -627,10 +626,10 @@ export function General({ onOpenChange }: GeneralProps) {
               disabled={isResettingPassword || resetPasswordSuccess}
             >
               {isResettingPassword
-                ? 'Sending...'
+                ? t('settings.general.sending')
                 : resetPasswordSuccess
-                  ? 'Sent'
-                  : 'Send Reset Email'}
+                  ? t('settings.general.sent')
+                  : t('settings.general.sendResetEmail')}
             </Button>
           </ModalFooter>
         </ModalContent>

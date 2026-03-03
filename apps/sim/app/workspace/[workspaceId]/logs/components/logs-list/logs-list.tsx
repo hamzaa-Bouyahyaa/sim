@@ -9,7 +9,7 @@ import { cn } from '@/lib/core/utils/cn'
 import { formatDuration } from '@/lib/core/utils/formatting'
 import {
   DELETED_WORKFLOW_COLOR,
-  DELETED_WORKFLOW_LABEL,
+  DELETED_WORKFLOW_LABEL_KEY,
   formatDate,
   getDisplayStatus,
   LOG_COLUMNS,
@@ -47,7 +47,7 @@ const LogRow = memo(
     const formattedDate = useMemo(() => formatDate(log.createdAt), [log.createdAt])
     const isDeletedWorkflow = !log.workflow?.id && !log.workflowId
     const workflowName = isDeletedWorkflow
-      ? DELETED_WORKFLOW_LABEL
+      ? t(DELETED_WORKFLOW_LABEL_KEY)
       : log.workflow?.name || t('logs.details.unknown')
     const workflowColor = isDeletedWorkflow ? DELETED_WORKFLOW_COLOR : log.workflow?.color
 
@@ -141,7 +141,7 @@ const LogRow = memo(
               buttonVariants({ variant: 'active' }),
               'absolute right-[24px] h-[26px] w-[26px] rounded-[6px] p-0'
             )}
-            aria-label='Open resume console'
+            aria-label={t('logs.list.openResumeConsole')}
             onClick={(e) => e.stopPropagation()}
           >
             <ArrowUpRight className='h-[14px] w-[14px]' />
@@ -170,6 +170,7 @@ interface RowProps {
   selectedRowRef: React.RefObject<HTMLTableRowElement | null>
   isFetchingNextPage: boolean
   loaderRef: React.RefObject<HTMLDivElement | null>
+  t: (key: string) => string
 }
 
 /**
@@ -187,6 +188,7 @@ function Row({
   selectedRowRef,
   isFetchingNextPage,
   loaderRef,
+  t,
 }: RowComponentProps<RowProps>) {
   if (index >= logs.length) {
     return (
@@ -195,10 +197,10 @@ function Row({
           {isFetchingNextPage ? (
             <>
               <Loader2 className='h-[16px] w-[16px] animate-spin' />
-              <span className='text-[13px]'>Loading more...</span>
+              <span className='text-[13px]'>{t('logs.list.loadingMore')}</span>
             </>
           ) : (
-            <span className='text-[13px]'>Scroll to load more</span>
+            <span className='text-[13px]'>{t('logs.list.scrollToLoadMore')}</span>
           )}
         </div>
       </div>
@@ -253,6 +255,7 @@ export function LogsList({
   onLoadMore,
   loaderRef,
 }: LogsListProps) {
+  const { t } = useTranslation()
   const listRef = useListRef(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [listHeight, setListHeight] = useState(400)
@@ -296,6 +299,7 @@ export function LogsList({
       selectedRowRef,
       isFetchingNextPage,
       loaderRef,
+      t,
     }),
     [
       logs,
@@ -306,6 +310,7 @@ export function LogsList({
       selectedRowRef,
       isFetchingNextPage,
       loaderRef,
+      t,
     ]
   )
 

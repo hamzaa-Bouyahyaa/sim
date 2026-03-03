@@ -212,7 +212,7 @@ const SModalMain = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
     <div
       ref={ref}
       className={cn(
-        'flex min-w-0 flex-1 flex-col gap-[16px] overflow-hidden rounded-[8px] border-l bg-[var(--surface-2)] p-[14px]',
+        'flex min-w-0 flex-1 flex-col gap-[16px] overflow-hidden rounded-[8px] border-l rtl:border-l-0 rtl:border-r bg-[var(--surface-2)] p-[14px]',
         className
       )}
       {...props}

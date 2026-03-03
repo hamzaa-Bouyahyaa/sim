@@ -106,7 +106,7 @@ type NavigationSection =
 
 type NavigationItem = {
   id: SettingsSection
-  label: string
+  labelKey: string
   icon: React.ComponentType<{ className?: string }>
   section: NavigationSection
   hideWhenBillingDisabled?: boolean
@@ -117,21 +117,21 @@ type NavigationItem = {
   requiresSuperUser?: boolean
 }
 
-const sectionConfig: { key: NavigationSection; title: string }[] = [
-  { key: 'account', title: 'Account' },
-  { key: 'tools', title: 'Tools' },
-  { key: 'subscription', title: 'Subscription' },
-  { key: 'system', title: 'System' },
-  { key: 'enterprise', title: 'Enterprise' },
-  { key: 'superuser', title: 'Superuser' },
+const sectionConfig: { key: NavigationSection; titleKey: string }[] = [
+  { key: 'account', titleKey: 'settings.nav.account' },
+  { key: 'tools', titleKey: 'settings.nav.tools' },
+  { key: 'subscription', titleKey: 'settings.nav.subscription' },
+  { key: 'system', titleKey: 'settings.nav.system' },
+  { key: 'enterprise', titleKey: 'settings.nav.enterprise' },
+  { key: 'superuser', titleKey: 'settings.nav.superuser' },
 ]
 
 const allNavigationItems: NavigationItem[] = [
-  { id: 'general', label: 'General', icon: Settings, section: 'account' },
-  { id: 'template-profile', label: 'Template Profile', icon: User, section: 'account' },
+  { id: 'general', labelKey: 'settings.nav.general', icon: Settings, section: 'account' },
+  { id: 'template-profile', labelKey: 'settings.nav.templateProfile', icon: User, section: 'account' },
   {
     id: 'access-control',
-    label: 'Access Control',
+    labelKey: 'settings.nav.accessControl',
     icon: ShieldCheck,
     section: 'enterprise',
     requiresHosted: true,
@@ -140,44 +140,44 @@ const allNavigationItems: NavigationItem[] = [
   },
   {
     id: 'subscription',
-    label: 'Subscription',
+    labelKey: 'settings.nav.subscription',
     icon: Card,
     section: 'subscription',
     hideWhenBillingDisabled: true,
   },
   {
     id: 'team',
-    label: 'Team',
+    labelKey: 'settings.nav.team',
     icon: Users,
     section: 'subscription',
     hideWhenBillingDisabled: true,
     requiresHosted: true,
     requiresTeam: true,
   },
-  { id: 'credentials', label: 'Secrets', icon: Key, section: 'account' },
-  { id: 'custom-tools', label: 'Custom Tools', icon: Wrench, section: 'tools' },
-  { id: 'skills', label: 'Skills', icon: AgentSkillsIcon, section: 'tools' },
-  { id: 'mcp', label: 'MCP Tools', icon: McpIcon, section: 'tools' },
-  { id: 'apikeys', label: 'Sim Keys', icon: TerminalWindow, section: 'system' },
-  { id: 'workflow-mcp-servers', label: 'MCP Servers', icon: Server, section: 'system' },
+  { id: 'credentials', labelKey: 'settings.nav.secrets', icon: Key, section: 'account' },
+  { id: 'custom-tools', labelKey: 'settings.nav.customTools', icon: Wrench, section: 'tools' },
+  { id: 'skills', labelKey: 'settings.nav.skills', icon: AgentSkillsIcon, section: 'tools' },
+  { id: 'mcp', labelKey: 'settings.nav.mcpTools', icon: McpIcon, section: 'tools' },
+  { id: 'apikeys', labelKey: 'settings.nav.simKeys', icon: TerminalWindow, section: 'system' },
+  { id: 'workflow-mcp-servers', labelKey: 'settings.nav.mcpServers', icon: Server, section: 'system' },
   {
     id: 'byok',
-    label: 'BYOK',
+    labelKey: 'settings.nav.byok',
     icon: KeySquare,
     section: 'system',
     requiresHosted: true,
   },
   {
     id: 'copilot',
-    label: 'Copilot Keys',
+    labelKey: 'settings.nav.copilotKeys',
     icon: HexSimple,
     section: 'system',
     requiresHosted: true,
   },
-  { id: 'files', label: 'Files', icon: Files, section: 'system' },
+  { id: 'files', labelKey: 'settings.nav.files', icon: Files, section: 'system' },
   {
     id: 'credential-sets',
-    label: 'Email Polling',
+    labelKey: 'settings.nav.emailPolling',
     icon: Mail,
     section: 'system',
     requiresHosted: true,
@@ -185,7 +185,7 @@ const allNavigationItems: NavigationItem[] = [
   },
   {
     id: 'sso',
-    label: 'Single Sign-On',
+    labelKey: 'settings.nav.sso',
     icon: LogIn,
     section: 'enterprise',
     requiresHosted: true,
@@ -194,7 +194,7 @@ const allNavigationItems: NavigationItem[] = [
   },
   {
     id: 'debug',
-    label: 'Debug',
+    labelKey: 'settings.nav.debug',
     icon: Bug,
     section: 'superuser',
     requiresSuperUser: true,
@@ -480,13 +480,13 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
 
         <SModalSidebar>
           <SModalSidebarHeader>{t('settings.title')}</SModalSidebarHeader>
-          {sectionConfig.map(({ key, title }) => {
+          {sectionConfig.map(({ key, titleKey }) => {
             const sectionItems = navigationItems.filter((item) => item.section === key)
             if (sectionItems.length === 0) return null
 
             return (
               <SModalSidebarSection key={key}>
-                <SModalSidebarSectionTitle>{title}</SModalSidebarSectionTitle>
+                <SModalSidebarSectionTitle>{t(titleKey)}</SModalSidebarSectionTitle>
                 {sectionItems.map((item) => (
                   <SModalSidebarItem
                     key={item.id}
@@ -496,7 +496,7 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
                     onClick={() => handleSectionChange(item.id)}
                     data-section={item.id}
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                   </SModalSidebarItem>
                 ))}
               </SModalSidebarSection>
@@ -506,8 +506,10 @@ export function SettingsModal({ open, onOpenChange }: SettingsModalProps) {
 
         <SModalMain>
           <SModalMainHeader>
-            {navigationItems.find((item) => item.id === effectiveActiveSection)?.label ||
-              effectiveActiveSection}
+            {(() => {
+              const item = navigationItems.find((item) => item.id === effectiveActiveSection)
+              return item ? t(item.labelKey) : effectiveActiveSection
+            })()}
           </SModalMainHeader>
           <SModalMainBody>
             {effectiveActiveSection === 'general' && <General onOpenChange={onOpenChange} />}

@@ -4,6 +4,7 @@ import { useTranslation } from '@/hooks/use-translation'
 import {
   DELETED_WORKFLOW_COLOR,
   DELETED_WORKFLOW_LABEL,
+  DELETED_WORKFLOW_LABEL_KEY,
 } from '@/app/workspace/[workspaceId]/logs/utils'
 import { useWorkflowRegistry } from '@/stores/workflows/registry/store'
 import { StatusBar, type StatusBarSegment } from '..'
@@ -96,7 +97,7 @@ function WorkflowsListInner({
                       }}
                     />
                     <span className='min-w-0 truncate font-medium text-[12px] text-[var(--text-primary)]'>
-                      {workflow.workflowName}
+                      {isDeletedWorkflow ? t(DELETED_WORKFLOW_LABEL_KEY) : workflow.workflowName}
                     </span>
                   </div>
 

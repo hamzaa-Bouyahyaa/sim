@@ -138,7 +138,8 @@
     "emailAddresses": "عناوين البريد الإلكتروني",
     "noResultsFound": "لم يتم العثور على نتائج.",
     "removing": "جارٍ الإزالة...",
-    "cancelling": "جارٍ الإلغاء..."
+    "cancelling": "جارٍ الإلغاء...",
+    "deleteConfirm": "هل أنت متأكد أنك تريد حذف"
   },
   "panel": {
     "tabs": {
@@ -386,6 +387,9 @@
     "openOnRun": "فتح عند التشغيل",
     "noLogsYet": "لا توجد سجلات بعد",
     "resizeTerminal": "تغيير حجم الطرفية",
+    "iteration": "التكرار",
+    "loop": "حلقة",
+    "parallel": "متوازي",
     "filter": {
       "filters": "التصفيات",
       "status": "الحالة",
@@ -701,6 +705,34 @@
     "errorPrefix": "خطأ:",
     "failedToLoad": "فشل تحميل السجلات",
     "noLogsFound": "لم يتم العثور على سجلات",
+    "deletedWorkflow": "سير عمل محذوف",
+    "columns": {
+      "date": "التاريخ",
+      "time": "الوقت",
+      "status": "الحالة",
+      "workflow": "سير العمل",
+      "cost": "التكلفة",
+      "trigger": "المحفّز",
+      "duration": "المدة"
+    },
+    "status": {
+      "error": "خطأ",
+      "pending": "قيد الانتظار",
+      "running": "قيد التشغيل",
+      "cancelled": "ملغي",
+      "info": "معلومات"
+    },
+    "trigger": {
+      "manual": "يدوي",
+      "api": "API",
+      "schedule": "مجدول",
+      "chat": "محادثة",
+      "form": "نموذج",
+      "webhook": "Webhook",
+      "mcp": "MCP",
+      "a2a": "A2A",
+      "copilot": "مساعد"
+    },
     "toolbar": {
       "exportCsv": "تصدير كـ CSV",
       "configureNotifications": "إعداد الإشعارات",
@@ -722,7 +754,31 @@
       "allTime": "كل الأوقات",
       "searchWorkflows": "البحث في سير العمل...",
       "searchFolders": "البحث في المجلدات...",
-      "searchTriggers": "البحث في المحفزات..."
+      "searchTriggers": "البحث في المحفزات...",
+      "selected": "محدد",
+      "timeRange": {
+        "allTime": "كل الأوقات",
+        "past30Min": "آخر 30 دقيقة",
+        "pastHour": "الساعة الماضية",
+        "past6Hours": "آخر 6 ساعات",
+        "past12Hours": "آخر 12 ساعة",
+        "past24Hours": "آخر 24 ساعة",
+        "past3Days": "آخر 3 أيام",
+        "past7Days": "آخر 7 أيام",
+        "past14Days": "آخر 14 يوماً",
+        "past30Days": "آخر 30 يوماً",
+        "customRange": "نطاق مخصص"
+      },
+      "months": {
+        "jan": "يناير", "feb": "فبراير", "mar": "مارس", "apr": "أبريل",
+        "may": "مايو", "jun": "يونيو", "jul": "يوليو", "aug": "أغسطس",
+        "sep": "سبتمبر", "oct": "أكتوبر", "nov": "نوفمبر", "dec": "ديسمبر"
+      }
+    },
+    "list": {
+      "loadingMore": "جارٍ تحميل المزيد...",
+      "scrollToLoadMore": "مرر للتحميل",
+      "openResumeConsole": "فتح وحدة الاستئناف"
     },
     "details": {
       "title": "تفاصيل السجل",
@@ -750,7 +806,9 @@
       "tokens": "الرموز:",
       "totalCostDescription": "تشمل التكلفة الإجمالية رسوم التنفيذ الأساسية بقيمة",
       "plusModelCosts": "بالإضافة إلى تكاليف استخدام النموذج.",
-      "searchPlaceholder": "بحث..."
+      "searchPlaceholder": "بحث...",
+      "tokenIn": "مدخل",
+      "tokenOut": "مخرج"
     },
     "logContextMenu": {
       "copyExecutionId": "نسخ معرّف التنفيذ",
@@ -839,6 +897,30 @@
   },
   "settings": {
     "title": "الإعدادات",
+    "nav": {
+      "account": "الحساب",
+      "tools": "الأدوات",
+      "subscription": "الاشتراك",
+      "system": "النظام",
+      "enterprise": "المؤسسة",
+      "superuser": "المسؤول المتقدم",
+      "general": "عام",
+      "templateProfile": "ملف القالب",
+      "secrets": "الأسرار",
+      "customTools": "الأدوات المخصصة",
+      "skills": "المهارات",
+      "mcpTools": "أدوات MCP",
+      "simKeys": "مفاتيح Sim",
+      "mcpServers": "خوادم MCP",
+      "byok": "BYOK",
+      "copilotKeys": "مفاتيح المساعد",
+      "files": "الملفات",
+      "emailPolling": "استطلاع البريد",
+      "sso": "تسجيل دخول موحد",
+      "debug": "تصحيح الأخطاء",
+      "accessControl": "التحكم بالوصول",
+      "team": "الفريق"
+    },
     "general": {
       "title": "عام",
       "theme": "السمة",
@@ -853,7 +935,22 @@
       "superAdminMode": "وضع المسؤول المتقدم",
       "resetPassword": "إعادة تعيين كلمة المرور",
       "saveName": "حفظ الاسم",
-      "editName": "تعديل الاسم"
+      "editName": "تعديل الاسم",
+      "system": "النظام",
+      "light": "فاتح",
+      "dark": "داكن",
+      "off": "إيقاف",
+      "signOut": "تسجيل الخروج",
+      "homePage": "الصفحة الرئيسية",
+      "telemetryDescription": "نستخدم OpenTelemetry لجمع بيانات الاستخدام المجهولة لتحسين Sim. يمكنك إلغاء الاشتراك في أي وقت.",
+      "resetEmailBefore": "سيتم إرسال رابط إعادة تعيين كلمة المرور إلى",
+      "resetEmailAfter": "انقر على الرابط في البريد الإلكتروني لإنشاء كلمة مرور جديدة.",
+      "sending": "جارٍ الإرسال...",
+      "sent": "تم الإرسال",
+      "sendResetEmail": "إرسال بريد إعادة التعيين",
+      "failedUpdatePicture": "فشل تحديث صورة الملف الشخصي",
+      "failedRemovePicture": "فشل إزالة صورة الملف الشخصي",
+      "failedSendEmail": "فشل إرسال البريد الإلكتروني"
     },
     "apiKeys": {
       "title": "مفاتيح API",
@@ -862,7 +959,17 @@
       "createTitle": "إنشاء مفتاح Sim جديد",
       "workspace": "مساحة العمل",
       "namePlaceholder": "مثال: تطوير، إنتاج",
-      "created": "تم إنشاء مفتاح Sim"
+      "created": "تم إنشاء مفتاح Sim",
+      "never": "أبداً",
+      "emptyState": "انقر \"إنشاء\" أعلاه للبدء",
+      "noWorkspaceKeys": "لا توجد مفاتيح Sim لمساحة العمل بعد",
+      "personal": "شخصي",
+      "conflictWarning": "مفتاح Sim لمساحة العمل بنفس الاسم يتجاوز هذا. أعد تسمية مفتاحك الشخصي لاستخدامه.",
+      "noResults": "لم يتم العثور على مفاتيح Sim مطابقة لـ \"{term}\"",
+      "allowPersonal": "السماح بمفاتيح Sim الشخصية",
+      "allowPersonalTooltip": "السماح للمتعاونين بإنشاء واستخدام مفاتيحهم الخاصة مع فوترة الاستخدام عليهم.",
+      "deleteWarningBefore": "حذف",
+      "deleteWarningAfter": "سيؤدي إلى إلغاء الوصول فوراً لأي تكاملات تستخدمه."
     },
     "copilot": {
       "title": "المساعد",
@@ -915,7 +1022,35 @@
     "customTools": {
       "title": "الأدوات المخصصة",
       "searchPlaceholder": "البحث في الأدوات...",
-      "deleteTitle": "حذف الأداة المخصصة"
+      "deleteTitle": "حذف الأداة المخصصة",
+      "failedLoad": "فشل تحميل الأدوات",
+      "emptyState": "انقر \"إضافة\" أعلاه للبدء",
+      "unnamed": "أداة بدون اسم",
+      "noResults": "لم يتم العثور على أدوات مطابقة لـ \"{term}\""
+    },
+    "skills": {
+      "failedLoad": "فشل تحميل المهارات",
+      "emptyState": "انقر \"إضافة\" أعلاه للبدء",
+      "noResults": "لم يتم العثور على مهارات مطابقة لـ \"{term}\""
+    },
+    "files": {
+      "noFiles": "لم يتم رفع ملفات بعد",
+      "noResults": "لم يتم العثور على ملفات مطابقة لـ \"{term}\"",
+      "size": "الحجم",
+      "uploaded": "تاريخ الرفع",
+      "download": "تنزيل الملف",
+      "deleteFile": "حذف الملف"
+    },
+    "templateProfile": {
+      "invalidUrl": "يرجى إدخال رابط صالح",
+      "invalidEmail": "يرجى إدخال بريد إلكتروني صالح",
+      "profile": "الملف الشخصي",
+      "personal": "شخصي",
+      "selectProfile": "اختر ملفاً شخصياً",
+      "display": "العرض",
+      "about": "نبذة",
+      "aboutPlaceholder": "أخبر الناس عن نفسك أو مؤسستك",
+      "socials": "التواصل الاجتماعي"
     },
     "credentialSets": {
       "title": "مجموعات الاعتماد",
@@ -1103,6 +1238,25 @@
       "failedRetry": "فشل - حاول مرة أخرى",
       "successMessage": "تم إرسال حالة سير العمل بنجاح!",
       "failedMessage": "فشل إرسال حالة سير العمل. يرجى المحاولة مرة أخرى."
+    }
+  },
+  "templates": {
+    "title": "القوالب",
+    "subtitle": "اختر قالباً وابدأ البناء، أو أنشئ واحداً من الصفر.",
+    "search": "بحث",
+    "gallery": "المعرض",
+    "yourTemplates": "قوالبك",
+    "pending": "قيد الانتظار",
+    "unknown": "غير معروف",
+    "empty": {
+      "noResults": "لم يتم العثور على قوالب",
+      "tryDifferent": "جرّب مصطلح بحث مختلف",
+      "noPending": "لا توجد قوالب معلّقة",
+      "newSubmissions": "ستظهر الطلبات الجديدة هنا",
+      "noTemplatesYet": "لا توجد قوالب بعد",
+      "createOrStar": "أنشئ قوالب أو أضفها للمفضلة لتراها هنا",
+      "noAvailable": "لا توجد قوالب متاحة",
+      "appearOnceApproved": "ستظهر القوالب بعد الموافقة عليها"
     }
   }
 }

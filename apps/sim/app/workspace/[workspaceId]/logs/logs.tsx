@@ -571,7 +571,7 @@ export default function Logs() {
                         key={key}
                         className={`${col.width} ${col.minWidth} font-medium text-[12px] text-[var(--text-tertiary)]`}
                       >
-                        {col.label}
+                        {t(col.labelKey)}
                       </span>
                     )
                   })}

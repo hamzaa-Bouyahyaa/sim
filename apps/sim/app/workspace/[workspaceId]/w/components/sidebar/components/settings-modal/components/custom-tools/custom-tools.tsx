@@ -127,7 +127,7 @@ export function CustomTools() {
           {error ? (
             <div className='flex h-full flex-col items-center justify-center gap-[8px]'>
               <p className='text-[#DC2626] text-[11px] leading-tight dark:text-[#F87171]'>
-                {error instanceof Error ? error.message : 'Failed to load tools'}
+                {error instanceof Error ? error.message : t('settings.customTools.failedLoad')}
               </p>
             </div>
           ) : isLoading ? (
@@ -138,7 +138,7 @@ export function CustomTools() {
             </div>
           ) : showEmptyState ? (
             <div className='flex h-full items-center justify-center text-[13px] text-[var(--text-muted)]'>
-              Click "Add" above to get started
+              {t('settings.customTools.emptyState')}
             </div>
           ) : (
             <div className='flex flex-col gap-[8px]'>
@@ -146,7 +146,7 @@ export function CustomTools() {
                 <div key={tool.id} className='flex items-center justify-between gap-[12px]'>
                   <div className='flex min-w-0 flex-col justify-center gap-[1px]'>
                     <span className='truncate font-medium text-[14px]'>
-                      {tool.title || 'Unnamed Tool'}
+                      {tool.title || t('settings.customTools.unnamed')}
                     </span>
                     {tool.schema?.function?.description && (
                       <p className='truncate text-[13px] text-[var(--text-muted)]'>
@@ -170,7 +170,7 @@ export function CustomTools() {
               ))}
               {showNoResults && (
                 <div className='py-[16px] text-center text-[13px] text-[var(--text-muted)]'>
-                  No tools found matching "{searchTerm}"
+                  {t('settings.customTools.noResults').replace('{term}', searchTerm)}
                 </div>
               )}
             </div>
@@ -206,9 +206,9 @@ export function CustomTools() {
           <ModalHeader>{t('settings.customTools.deleteTitle')}</ModalHeader>
           <ModalBody>
             <p className='text-[12px] text-[var(--text-secondary)]'>
-              Are you sure you want to delete{' '}
+              {t('common.deleteConfirm')}{' '}
               <span className='font-medium text-[var(--text-primary)]'>{toolToDelete?.name}</span>?{' '}
-              <span className='text-[var(--text-error)]'>This action cannot be undone.</span>
+              <span className='text-[var(--text-error)]'>{t('common.cannotBeUndone')}</span>
             </p>
           </ModalBody>
           <ModalFooter>

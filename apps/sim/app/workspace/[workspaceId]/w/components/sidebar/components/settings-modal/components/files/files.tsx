@@ -328,11 +328,11 @@ export function Files() {
           renderTableSkeleton()
         ) : files.length === 0 && failedFiles.length === 0 ? (
           <div className='flex h-full items-center justify-center text-[13px] text-[var(--text-muted)]'>
-            No files uploaded yet
+            {t('settings.files.noFiles')}
           </div>
         ) : filteredFiles.length === 0 && failedFiles.length === 0 ? (
           <div className='py-[16px] text-center text-[13px] text-[var(--text-muted)]'>
-            No files found matching "{search}"
+            {t('settings.files.noResults').replace('{term}', search)}
           </div>
         ) : (
           <Table className='table-fixed text-[13px]'>
@@ -342,10 +342,10 @@ export function Files() {
                   {t('common.name')}
                 </TableHead>
                 <TableHead className='w-[14%] px-[12px] py-[8px] text-left text-[12px] text-[var(--text-secondary)]'>
-                  Size
+                  {t('settings.files.size')}
                 </TableHead>
                 <TableHead className='w-[15%] px-[12px] py-[8px] text-left text-[12px] text-[var(--text-secondary)]'>
-                  Uploaded
+                  {t('settings.files.uploaded')}
                 </TableHead>
                 <TableHead className='w-[15%] px-[12px] py-[8px] text-left text-[12px] text-[var(--text-secondary)]'>
                   {t('common.actions')}
@@ -431,7 +431,7 @@ export function Files() {
                               )}
                             </Button>
                           </Tooltip.Trigger>
-                          <Tooltip.Content>Download file</Tooltip.Content>
+                          <Tooltip.Content>{t('settings.files.download')}</Tooltip.Content>
                         </Tooltip.Root>
                         {userPermissions.canEdit && (
                           <Tooltip.Root>
@@ -446,7 +446,7 @@ export function Files() {
                                 <Trash className='h-[14px] w-[14px]' />
                               </Button>
                             </Tooltip.Trigger>
-                            <Tooltip.Content>Delete file</Tooltip.Content>
+                            <Tooltip.Content>{t('settings.files.deleteFile')}</Tooltip.Content>
                           </Tooltip.Root>
                         )}
                       </div>

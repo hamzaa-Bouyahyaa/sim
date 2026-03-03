@@ -10,6 +10,7 @@ import {
   TemplateCardSkeleton,
 } from '@/app/workspace/[workspaceId]/templates/components/template-card'
 import { useDebounce } from '@/hooks/use-debounce'
+import { useTranslation } from '@/hooks/use-translation'
 import type { WorkflowState } from '@/stores/workflows/workflow/types'
 
 /**
@@ -89,6 +90,7 @@ export default function Templates({
   currentUserId,
   isSuperUser,
 }: TemplatesProps) {
+  const { t } = useTranslation()
   const [searchQuery, setSearchQuery] = useState('')
   const debouncedSearchQuery = useDebounce(searchQuery, 300)
   const [activeTab, setActiveTab] = useState('gallery')
@@ -128,23 +130,23 @@ export default function Templates({
   const emptyState = useMemo(() => {
     if (debouncedSearchQuery) {
       return {
-        title: 'No templates found',
-        description: 'Try a different search term',
+        title: t('templates.empty.noResults'),
+        description: t('templates.empty.tryDifferent'),
       }
     }
 
     const messages = {
       pending: {
-        title: 'No pending templates',
-        description: 'New submissions will appear here',
+        title: t('templates.empty.noPending'),
+        description: t('templates.empty.newSubmissions'),
       },
       your: {
-        title: 'No templates yet',
-        description: 'Create or star templates to see them here',
+        title: t('templates.empty.noTemplatesYet'),
+        description: t('templates.empty.createOrStar'),
       },
       gallery: {
-        title: 'No templates available',
-        description: 'Templates will appear once approved',
+        title: t('templates.empty.noAvailable'),
+        description: t('templates.empty.appearOnceApproved'),
       },
     }
 
@@ -160,10 +162,10 @@ export default function Templates({
               <div className='flex h-[26px] w-[26px] items-center justify-center rounded-[6px] border border-[#5BA8D9] bg-[#E8F4FB] dark:border-[#1A5070] dark:bg-[#153347]'>
                 <Layout className='h-[14px] w-[14px] text-[#5BA8D9] dark:text-[#33b4ff]' />
               </div>
-              <h1 className='font-medium text-[18px]'>Templates</h1>
+              <h1 className='font-medium text-[18px]'>{t('templates.title')}</h1>
             </div>
             <p className='mt-[10px] text-[14px] text-[var(--text-tertiary)]'>
-              Grab a template and start building, or make one from scratch.
+              {t('templates.subtitle')}
             </p>
           </div>
 
@@ -171,7 +173,7 @@ export default function Templates({
             <div className='flex h-[32px] w-[400px] items-center gap-[6px] rounded-[8px] bg-[var(--surface-4)] px-[8px]'>
               <Search className='h-[14px] w-[14px] text-[var(--text-subtle)]' />
               <Input
-                placeholder='Search'
+                placeholder={t('templates.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className='flex-1 border-0 bg-transparent px-0 font-medium text-[var(--text-secondary)] text-small leading-none placeholder:text-[var(--text-subtle)] focus-visible:ring-0 focus-visible:ring-offset-0'
@@ -183,14 +185,14 @@ export default function Templates({
                 className='h-[32px] rounded-[6px]'
                 onClick={() => setActiveTab('gallery')}
               >
-                Gallery
+                {t('templates.gallery')}
               </Button>
               <Button
                 variant={activeTab === 'your' ? 'active' : 'default'}
                 className='h-[32px] rounded-[6px]'
                 onClick={() => setActiveTab('your')}
               >
-                Your Templates
+                {t('templates.yourTemplates')}
               </Button>
               {isSuperUser && (
                 <Button
@@ -198,7 +200,7 @@ export default function Templates({
                   className='h-[32px] rounded-[6px]'
                   onClick={() => setActiveTab('pending')}
                 >
-                  Pending
+                  {t('templates.pending')}
                 </Button>
               )}
             </div>
@@ -222,7 +224,7 @@ export default function Templates({
                   key={template.id}
                   id={template.id}
                   title={template.name}
-                  author={template.creator?.name || 'Unknown'}
+                  author={template.creator?.name || t('templates.unknown')}
                   authorImageUrl={template.creator?.profileImageUrl || null}
                   usageCount={template.views.toString()}
                   stars={template.stars}

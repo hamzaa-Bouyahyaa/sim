@@ -168,6 +168,7 @@ const IterationNodeRow = memo(function IterationNodeRow({
   isExpanded: boolean
   onToggle: () => void
 }) {
+  const { t } = useTranslation()
   const { entry, children, iterationInfo } = node
   const hasError = Boolean(entry.error) || children.some((c) => c.entry.error)
   const hasChildren = children.length > 0
@@ -175,7 +176,7 @@ const IterationNodeRow = memo(function IterationNodeRow({
   const hasCanceledChild = children.some((c) => c.entry.isCanceled) && !hasRunningChild
 
   const iterationLabel = iterationInfo
-    ? `Iteration ${iterationInfo.current + 1}${iterationInfo.total !== undefined ? ` / ${iterationInfo.total}` : ''}`
+    ? `${t('terminal.iteration')} ${iterationInfo.current + 1}${iterationInfo.total !== undefined ? ` / ${iterationInfo.total}` : ''}`
     : entry.blockName
 
   return (
@@ -256,12 +257,8 @@ const SubflowNodeRow = memo(function SubflowNodeRow({
   expandedNodes: Set<string>
   onToggleNode: (nodeId: string) => void
 }) {
+  const { t } = useTranslation()
   const { entry, children } = node
-  const BlockIcon = getBlockIcon(entry.blockType)
-  const hasError =
-    Boolean(entry.error) ||
-    children.some((c) => c.entry.error || c.children.some((gc) => gc.entry.error))
-  const bgColor = getBlockColor(entry.blockType)
   const nodeId = entry.id
   const isExpanded = expandedNodes.has(nodeId)
   const hasChildren = children.length > 0
@@ -276,10 +273,15 @@ const SubflowNodeRow = memo(function SubflowNodeRow({
 
   const displayName =
     entry.blockType === 'loop'
-      ? 'Loop'
+      ? t('terminal.loop')
       : entry.blockType === 'parallel'
-        ? 'Parallel'
+        ? t('terminal.parallel')
         : entry.blockName
+  const BlockIcon = getBlockIcon(entry.blockType)
+  const hasError =
+    Boolean(entry.error) ||
+    children.some((c) => c.entry.error || c.children.some((gc) => gc.entry.error))
+  const bgColor = getBlockColor(entry.blockType)
 
   return (
     <div className='flex min-w-0 flex-col'>

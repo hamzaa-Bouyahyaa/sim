@@ -215,14 +215,14 @@ export function TemplateProfile() {
       new URL(normalizeUrl(value))
       return null
     } catch {
-      return 'Please enter a valid URL'
+      return t('settings.templateProfile.invalidUrl')
     }
   }
 
   const validateEmail = (value: string): string | null => {
     if (!value) return null
     const validation = quickValidateEmail(value)
-    return validation.isValid ? null : 'Please enter a valid email'
+    return validation.isValid ? null : t('settings.templateProfile.invalidEmail')
   }
 
   const updateField = <K extends keyof FormData>(field: K, value: FormData[K]) => {
@@ -304,10 +304,10 @@ export function TemplateProfile() {
           {/* Profile Selection - only show if user has organizations */}
           {organizations.length > 0 && (
             <div className='flex flex-col gap-[8px]'>
-              <span className='font-medium text-[13px] text-[var(--text-secondary)]'>Profile</span>
+              <span className='font-medium text-[13px] text-[var(--text-secondary)]'>{t('settings.templateProfile.profile')}</span>
               <Combobox
                 options={[
-                  { label: 'Personal', value: userId },
+                  { label: t('settings.templateProfile.personal'), value: userId },
                   ...organizations.map((org) => ({
                     label: org.name,
                     value: org.id,
@@ -322,7 +322,7 @@ export function TemplateProfile() {
                     referenceId: value,
                   }))
                 }}
-                placeholder='Select profile'
+                placeholder={t('settings.templateProfile.selectProfile')}
                 editable={false}
               />
             </div>
@@ -331,7 +331,7 @@ export function TemplateProfile() {
           {/* Display */}
           <div className='flex flex-col gap-[8px]'>
             <span className='font-medium text-[13px] text-[var(--text-secondary)]'>
-              Display<span className='ml-[6px] text-[var(--text-secondary)]'>*</span>
+              {t('settings.templateProfile.display')}<span className='ml-[6px] text-[var(--text-secondary)]'>*</span>
             </span>
             <div className='flex items-center gap-[10px]'>
               <div className='relative'>
@@ -419,9 +419,9 @@ export function TemplateProfile() {
 
           {/* About */}
           <div className='flex flex-col gap-[8px]'>
-            <span className='font-medium text-[13px] text-[var(--text-secondary)]'>About</span>
+            <span className='font-medium text-[13px] text-[var(--text-secondary)]'>{t('settings.templateProfile.about')}</span>
             <Textarea
-              placeholder='Tell people about yourself or your organization'
+              placeholder={t('settings.templateProfile.aboutPlaceholder')}
               value={formData.about}
               onChange={(e) => updateField('about', e.target.value)}
               className='min-h-[100px] w-full resize-none'
@@ -430,7 +430,7 @@ export function TemplateProfile() {
 
           {/* Social Links */}
           <div className='flex flex-col gap-[8px]'>
-            <span className='font-medium text-[13px] text-[var(--text-secondary)]'>Socials</span>
+            <span className='font-medium text-[13px] text-[var(--text-secondary)]'>{t('settings.templateProfile.socials')}</span>
 
             <div>
               <div className='relative'>

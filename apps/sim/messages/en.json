@@ -138,7 +138,8 @@
     "emailAddresses": "Email Addresses",
     "noResultsFound": "No results found.",
     "removing": "Removing...",
-    "cancelling": "Cancelling..."
+    "cancelling": "Cancelling...",
+    "deleteConfirm": "Are you sure you want to delete"
   },
   "panel": {
     "tabs": {
@@ -386,6 +387,9 @@
     "openOnRun": "Open on run",
     "noLogsYet": "No logs yet",
     "resizeTerminal": "Resize terminal",
+    "iteration": "Iteration",
+    "loop": "Loop",
+    "parallel": "Parallel",
     "filter": {
       "filters": "Filters",
       "status": "Status",
@@ -701,6 +705,34 @@
     "errorPrefix": "Error:",
     "failedToLoad": "Failed to load logs",
     "noLogsFound": "No logs found",
+    "deletedWorkflow": "Deleted Workflow",
+    "columns": {
+      "date": "Date",
+      "time": "Time",
+      "status": "Status",
+      "workflow": "Workflow",
+      "cost": "Cost",
+      "trigger": "Trigger",
+      "duration": "Duration"
+    },
+    "status": {
+      "error": "Error",
+      "pending": "Pending",
+      "running": "Running",
+      "cancelled": "Cancelled",
+      "info": "Info"
+    },
+    "trigger": {
+      "manual": "Manual",
+      "api": "API",
+      "schedule": "Schedule",
+      "chat": "Chat",
+      "form": "Form",
+      "webhook": "Webhook",
+      "mcp": "MCP",
+      "a2a": "A2A",
+      "copilot": "Copilot"
+    },
     "toolbar": {
       "exportCsv": "Export as CSV",
       "configureNotifications": "Configure Notifications",
@@ -722,7 +754,31 @@
       "allTime": "All time",
       "searchWorkflows": "Search workflows...",
       "searchFolders": "Search folders...",
-      "searchTriggers": "Search triggers..."
+      "searchTriggers": "Search triggers...",
+      "selected": "selected",
+      "timeRange": {
+        "allTime": "All time",
+        "past30Min": "Past 30 minutes",
+        "pastHour": "Past hour",
+        "past6Hours": "Past 6 hours",
+        "past12Hours": "Past 12 hours",
+        "past24Hours": "Past 24 hours",
+        "past3Days": "Past 3 days",
+        "past7Days": "Past 7 days",
+        "past14Days": "Past 14 days",
+        "past30Days": "Past 30 days",
+        "customRange": "Custom range"
+      },
+      "months": {
+        "jan": "Jan", "feb": "Feb", "mar": "Mar", "apr": "Apr",
+        "may": "May", "jun": "Jun", "jul": "Jul", "aug": "Aug",
+        "sep": "Sep", "oct": "Oct", "nov": "Nov", "dec": "Dec"
+      }
+    },
+    "list": {
+      "loadingMore": "Loading more...",
+      "scrollToLoadMore": "Scroll to load more",
+      "openResumeConsole": "Open resume console"
     },
     "details": {
       "title": "Log Details",
@@ -750,7 +806,9 @@
       "tokens": "Tokens:",
       "totalCostDescription": "Total cost includes a base execution charge of",
       "plusModelCosts": "plus any model usage costs.",
-      "searchPlaceholder": "Search..."
+      "searchPlaceholder": "Search...",
+      "tokenIn": "in",
+      "tokenOut": "out"
     },
     "logContextMenu": {
       "copyExecutionId": "Copy Execution ID",
@@ -839,6 +897,30 @@
   },
   "settings": {
     "title": "Settings",
+    "nav": {
+      "account": "Account",
+      "tools": "Tools",
+      "subscription": "Subscription",
+      "system": "System",
+      "enterprise": "Enterprise",
+      "superuser": "Superuser",
+      "general": "General",
+      "templateProfile": "Template Profile",
+      "secrets": "Secrets",
+      "customTools": "Custom Tools",
+      "skills": "Skills",
+      "mcpTools": "MCP Tools",
+      "simKeys": "Sim Keys",
+      "mcpServers": "MCP Servers",
+      "byok": "BYOK",
+      "copilotKeys": "Copilot Keys",
+      "files": "Files",
+      "emailPolling": "Email Polling",
+      "sso": "Single Sign-On",
+      "debug": "Debug",
+      "accessControl": "Access Control",
+      "team": "Team"
+    },
     "general": {
       "title": "General",
       "theme": "Theme",
@@ -853,7 +935,22 @@
       "superAdminMode": "Super admin mode",
       "resetPassword": "Reset Password",
       "saveName": "Save name",
-      "editName": "Edit name"
+      "editName": "Edit name",
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark",
+      "off": "Off",
+      "signOut": "Sign out",
+      "homePage": "Home Page",
+      "telemetryDescription": "We use OpenTelemetry to collect anonymous usage data to improve Sim. You can opt-out at any time.",
+      "resetEmailBefore": "A password reset link will be sent to",
+      "resetEmailAfter": "Click the link in the email to create a new password.",
+      "sending": "Sending...",
+      "sent": "Sent",
+      "sendResetEmail": "Send Reset Email",
+      "failedUpdatePicture": "Failed to update profile picture",
+      "failedRemovePicture": "Failed to remove profile picture",
+      "failedSendEmail": "Failed to send email"
     },
     "apiKeys": {
       "title": "API Keys",
@@ -862,7 +959,17 @@
       "createTitle": "Create new Sim key",
       "workspace": "Workspace",
       "namePlaceholder": "e.g., Development, Production",
-      "created": "Your Sim key has been created"
+      "created": "Your Sim key has been created",
+      "never": "Never",
+      "emptyState": "Click \"Create\" above to get started",
+      "noWorkspaceKeys": "No workspace Sim keys yet",
+      "personal": "Personal",
+      "conflictWarning": "Workspace Sim key with the same name overrides this. Rename your personal key to use it.",
+      "noResults": "No Sim keys found matching \"{term}\"",
+      "allowPersonal": "Allow personal Sim keys",
+      "allowPersonalTooltip": "Allow collaborators to create and use their own keys with billing charged to them.",
+      "deleteWarningBefore": "Deleting",
+      "deleteWarningAfter": "will immediately revoke access for any integrations using it."
     },
     "copilot": {
       "title": "Copilot",
@@ -915,7 +1022,35 @@
     "customTools": {
       "title": "Custom Tools",
       "searchPlaceholder": "Search tools...",
-      "deleteTitle": "Delete Custom Tool"
+      "deleteTitle": "Delete Custom Tool",
+      "failedLoad": "Failed to load tools",
+      "emptyState": "Click \"Add\" above to get started",
+      "unnamed": "Unnamed Tool",
+      "noResults": "No tools found matching \"{term}\""
+    },
+    "skills": {
+      "failedLoad": "Failed to load skills",
+      "emptyState": "Click \"Add\" above to get started",
+      "noResults": "No skills found matching \"{term}\""
+    },
+    "files": {
+      "noFiles": "No files uploaded yet",
+      "noResults": "No files found matching \"{term}\"",
+      "size": "Size",
+      "uploaded": "Uploaded",
+      "download": "Download file",
+      "deleteFile": "Delete file"
+    },
+    "templateProfile": {
+      "invalidUrl": "Please enter a valid URL",
+      "invalidEmail": "Please enter a valid email",
+      "profile": "Profile",
+      "personal": "Personal",
+      "selectProfile": "Select profile",
+      "display": "Display",
+      "about": "About",
+      "aboutPlaceholder": "Tell people about yourself or your organization",
+      "socials": "Socials"
     },
     "credentialSets": {
       "title": "Credential Sets",
@@ -1103,6 +1238,25 @@
       "failedRetry": "Failed - Try Again",
       "successMessage": "Workflow state sent successfully!",
       "failedMessage": "Failed to send workflow state. Please try again."
+    }
+  },
+  "templates": {
+    "title": "Templates",
+    "subtitle": "Grab a template and start building, or make one from scratch.",
+    "search": "Search",
+    "gallery": "Gallery",
+    "yourTemplates": "Your Templates",
+    "pending": "Pending",
+    "unknown": "Unknown",
+    "empty": {
+      "noResults": "No templates found",
+      "tryDifferent": "Try a different search term",
+      "noPending": "No pending templates",
+      "newSubmissions": "New submissions will appear here",
+      "noTemplatesYet": "No templates yet",
+      "createOrStar": "Create or star templates to see them here",
+      "noAvailable": "No templates available",
+      "appearOnceApproved": "Templates will appear once approved"
     }
   }
 }
