@@ -57,6 +57,11 @@
     "settings": "الإعدادات",
     "tables": "الجداول"
   },
+  "naming": {
+    "workspace": "مساحة عمل",
+    "folder": "مجلد",
+    "subfolder": "مجلد فرعي"
+  },
   "common": {
     "loading": "جارٍ التحميل...",
     "save": "حفظ",

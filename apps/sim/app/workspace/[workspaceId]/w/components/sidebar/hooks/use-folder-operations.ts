@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { createLogger } from '@sim/logger'
 import { generateFolderName } from '@/lib/workspaces/naming'
 import { useCreateFolder } from '@/hooks/queries/folders'
+import { useTranslation } from '@/hooks/use-translation'
 
 const logger = createLogger('useFolderOperations')
 
@@ -18,6 +19,7 @@ interface UseFolderOperationsProps {
  * @returns Folder operations state and handlers
  */
 export function useFolderOperations({ workspaceId }: UseFolderOperationsProps) {
+  const { t } = useTranslation()
   const createFolderMutation = useCreateFolder()
 
   const handleCreateFolder = useCallback(async (): Promise<string | null> => {
@@ -26,7 +28,7 @@ export function useFolderOperations({ workspaceId }: UseFolderOperationsProps) {
     }
 
     try {
-      const folderName = await generateFolderName(workspaceId)
+      const folderName = await generateFolderName(workspaceId, t('naming.folder'))
       const folder = await createFolderMutation.mutateAsync({ name: folderName, workspaceId })
       logger.info(`Created folder: ${folderName}`)
       return folder.id

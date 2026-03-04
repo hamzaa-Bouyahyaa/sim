@@ -46,18 +46,18 @@ export function generateIncrementalName<T extends NameableEntity>(
 /**
  * Generates the next workspace name
  */
-export async function generateWorkspaceName(): Promise<string> {
+export async function generateWorkspaceName(prefix = 'Workspace'): Promise<string> {
   const response = await fetch('/api/workspaces')
   const data = (await response.json()) as WorkspacesApiResponse
   const workspaces = data.workspaces || []
 
-  return generateIncrementalName(workspaces, 'Workspace')
+  return generateIncrementalName(workspaces, prefix)
 }
 
 /**
  * Generates the next folder name for a workspace
  */
-export async function generateFolderName(workspaceId: string): Promise<string> {
+export async function generateFolderName(workspaceId: string, prefix = 'Folder'): Promise<string> {
   const response = await fetch(`/api/folders?workspaceId=${workspaceId}`)
   const data = (await response.json()) as FoldersApiResponse
   const folders = data.folders || []
@@ -65,7 +65,7 @@ export async function generateFolderName(workspaceId: string): Promise<string> {
   // Filter to only root-level folders (parentId is null)
   const rootFolders = folders.filter((folder) => folder.parentId === null)
 
-  return generateIncrementalName(rootFolders, 'Folder')
+  return generateIncrementalName(rootFolders, prefix)
 }
 
 /**
@@ -73,7 +73,8 @@ export async function generateFolderName(workspaceId: string): Promise<string> {
  */
 export async function generateSubfolderName(
   workspaceId: string,
-  parentFolderId: string
+  parentFolderId: string,
+  prefix = 'Subfolder'
 ): Promise<string> {
   const response = await fetch(`/api/folders?workspaceId=${workspaceId}`)
   const data = (await response.json()) as FoldersApiResponse
@@ -82,5 +83,5 @@ export async function generateSubfolderName(
   // Filter to only subfolders of the specified parent
   const subfolders = folders.filter((folder) => folder.parentId === parentFolderId)
 
-  return generateIncrementalName(subfolders, 'Subfolder')
+  return generateIncrementalName(subfolders, prefix)
 }

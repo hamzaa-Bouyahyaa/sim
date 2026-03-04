@@ -13,6 +13,7 @@ import {
   workspaceKeys,
 } from '@/hooks/queries/workspace'
 import { useWorkflowRegistry } from '@/stores/workflows/registry/store'
+import { useTranslation } from '@/hooks/use-translation'
 
 const logger = createLogger('useWorkspaceManagement')
 
@@ -33,6 +34,7 @@ export function useWorkspaceManagement({
   workspaceId,
   sessionUserId,
 }: UseWorkspaceManagementProps) {
+  const { t } = useTranslation()
   const router = useRouter()
   const pathname = usePathname()
   const queryClient = useQueryClient()
@@ -141,7 +143,7 @@ export function useWorkspaceManagement({
 
     try {
       logger.info('Creating new workspace')
-      const workspaceName = await generateWorkspaceName()
+      const workspaceName = await generateWorkspaceName(t('naming.workspace'))
       logger.info(`Generated workspace name: ${workspaceName}`)
 
       const newWorkspace = await createWorkspaceMutation.mutateAsync({ name: workspaceName })

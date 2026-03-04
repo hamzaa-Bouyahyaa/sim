@@ -57,6 +57,11 @@
     "settings": "Settings",
     "tables": "Tables"
   },
+  "naming": {
+    "workspace": "Workspace",
+    "folder": "Folder",
+    "subfolder": "Subfolder"
+  },
   "common": {
     "loading": "Loading...",
     "save": "Save",
