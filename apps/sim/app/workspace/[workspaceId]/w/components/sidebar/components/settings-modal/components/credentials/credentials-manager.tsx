@@ -59,21 +59,22 @@ import {
 } from '@/hooks/queries/oauth-connections'
 import { useWorkspacePermissionsQuery } from '@/hooks/queries/workspace'
 import { useSettingsModalStore } from '@/stores/modals/settings/store'
+import { useTranslation } from '@/hooks/use-translation'
 
 const logger = createLogger('CredentialsManager')
 
-const roleOptions = [
-  { value: 'member', label: 'Member' },
-  { value: 'admin', label: 'Admin' },
+const roleOptionKeys = [
+  { value: 'member', labelKey: 'settings.secrets.member' },
+  { value: 'admin', labelKey: 'settings.secrets.admin' },
 ] as const
 
 type CreateCredentialType = 'oauth' | 'secret'
 type SecretScope = 'workspace' | 'personal'
 type SecretInputMode = 'single' | 'bulk'
 
-const createTypeOptions = [
-  { value: 'secret', label: 'Secret' },
-  { value: 'oauth', label: 'OAuth Account' },
+const createTypeOptionKeys = [
+  { value: 'secret', labelKey: 'settings.secrets.secret' },
+  { value: 'oauth', labelKey: 'settings.secrets.oauthAccount' },
 ] as const
 
 interface ParsedEnvEntry {
@@ -148,10 +149,10 @@ function typeBadgeVariant(_type: WorkspaceCredential['type']): 'gray-secondary' 
   return 'gray-secondary'
 }
 
-function typeLabel(type: WorkspaceCredential['type']): string {
-  if (type === 'oauth') return 'oauth'
-  if (type === 'env_workspace') return 'workspace secret'
-  return 'personal secret'
+function typeLabel(type: WorkspaceCredential['type'], t: (key: string) => string): string {
+  if (type === 'oauth') return 'OAuth'
+  if (type === 'env_workspace') return t('settings.secrets.workspaceSecret')
+  return t('settings.secrets.personalSecret')
 }
 
 function normalizeEnvKeyInput(raw: string): string {
@@ -180,6 +181,7 @@ interface CredentialsManagerProps {
 }
 
 export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
+  const { t } = useTranslation()
   const params = useParams()
   const workspaceId = (params?.workspaceId as string) || ''
 
@@ -268,7 +270,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
         (credential.description || '').toLowerCase().includes(normalized) ||
         (credential.providerId || '').toLowerCase().includes(normalized) ||
         resolveProviderLabel(credential.providerId).toLowerCase().includes(normalized) ||
-        typeLabel(credential.type).toLowerCase().includes(normalized)
+        typeLabel(credential.type, t).toLowerCase().includes(normalized)
       )
     })
   }, [credentials, searchTerm, oauthConnections])
@@ -434,7 +436,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
 
       await refetchCredentials()
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to save changes'
+      const message = error instanceof Error ? error.message : t('settings.secrets.failedSaveChanges')
       setDetailsError(message)
       logger.error('Failed to save credential details', error)
     } finally {
@@ -636,11 +638,11 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
     try {
       if (createType === 'oauth') {
         if (!selectedOAuthService) {
-          setCreateError('Select an OAuth service before connecting.')
+          setCreateError(t('settings.secrets.selectOAuthFirst'))
           return
         }
         if (!createDisplayName.trim()) {
-          setCreateError('Display name is required.')
+          setCreateError(t('settings.secrets.displayNameRequired'))
           return
         }
         setShowCreateOAuthRequiredModal(true)
@@ -655,11 +657,11 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
       if (!createEnvKey.trim()) return
       const normalizedEnvKey = normalizeEnvKeyInput(createEnvKey)
       if (!isValidEnvVarName(normalizedEnvKey)) {
-        setCreateError('Secret key must contain only letters, numbers, and underscores.')
+        setCreateError(t('settings.secrets.invalidSecretKey'))
         return
       }
       if (!createEnvValue.trim()) {
-        setCreateError('Secret value is required.')
+        setCreateError(t('settings.secrets.secretValueRequired'))
         return
       }
 
@@ -705,7 +707,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
       setShowCreateModal(false)
       resetCreateForm()
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to create secret'
+      const message = error instanceof Error ? error.message : t('settings.secrets.failedCreateSecret')
       setCreateError(message)
       logger.error('Failed to create credential', error)
     }
@@ -720,7 +722,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
       .filter((e) => e.key || e.value)
 
     if (entries.length === 0) {
-      setCreateError('Add at least one secret.')
+      setCreateError(t('settings.secrets.addAtLeastOne'))
       return
     }
 
@@ -799,7 +801,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
       setShowCreateModal(false)
       resetCreateForm()
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to create secrets'
+      const message = error instanceof Error ? error.message : t('settings.secrets.failedCreateSecrets')
       setCreateError(message)
       logger.error('Failed to bulk create secrets', error)
     }
@@ -807,13 +809,13 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
 
   const handleConnectOAuthService = async () => {
     if (!selectedOAuthService) {
-      setCreateError('Select an OAuth service before connecting.')
+      setCreateError(t('settings.secrets.selectOAuthFirst'))
       return
     }
 
     const displayName = createDisplayName.trim()
     if (!displayName) {
-      setCreateError('Display name is required.')
+      setCreateError(t('settings.secrets.displayNameRequired'))
       return
     }
 
@@ -845,7 +847,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
         callbackURL: window.location.href,
       })
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to start OAuth connection'
+      const message = error instanceof Error ? error.message : t('settings.secrets.failedOAuthConnect')
       setCreateError(message)
       logger.error('Failed to connect OAuth service', error)
     }
@@ -865,7 +867,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
       if (credentialToDelete.type === 'oauth') {
         if (!credentialToDelete.accountId || !credentialToDelete.providerId) {
           const errorMessage =
-            'Cannot disconnect: missing account information. Please try reconnecting this credential first.'
+            t('settings.secrets.cannotDisconnect')
           setDeleteError(errorMessage)
           logger.error('Cannot disconnect OAuth credential: missing accountId or providerId')
           return
@@ -891,9 +893,9 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
       setShowDeleteConfirmDialog(false)
       setCredentialToDelete(null)
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to delete credential'
+      const message = error instanceof Error ? error.message : t('settings.secrets.failedDelete')
       setDeleteError(message)
-      logger.error('Failed to delete credential', error)
+      logger.error(t('settings.secrets.failedDelete'), error)
     }
   }
 
@@ -917,7 +919,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
         })
       }
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to share with workspace'
+      const message = error instanceof Error ? error.message : t('settings.secrets.failedShare')
       setDetailsError(message)
       logger.error('Failed to share credential with workspace', error)
     } finally {
@@ -938,7 +940,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
         personalEnvironment[envKey]?.value || workspaceEnvironmentData?.personal?.[envKey] || ''
 
       if (!currentValue) {
-        setDetailsError('Cannot promote: secret value is empty.')
+        setDetailsError(t('settings.secrets.cannotPromoteEmpty'))
         setIsPromoting(false)
         return
       }
@@ -967,7 +969,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
 
       await refetchCredentials()
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to promote secret'
+      const message = error instanceof Error ? error.message : t('settings.secrets.failedPromote')
       setDetailsError(message)
       logger.error('Failed to promote personal secret to workspace', error)
     } finally {
@@ -1015,7 +1017,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
         callbackURL: window.location.href,
       })
     } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Failed to start reconnect'
+      const message = error instanceof Error ? error.message : t('settings.secrets.failedReconnect')
       setDetailsError(message)
       logger.error('Failed to reconnect OAuth credential', error)
     }
@@ -1076,7 +1078,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
       }}
     >
       <ModalContent size='lg'>
-        <ModalHeader>Create Secret</ModalHeader>
+        <ModalHeader>{t('settings.secrets.createSecret')}</ModalHeader>
         <ModalBody>
           {(createError ||
             existingOAuthDisplayName ||
@@ -1090,33 +1092,35 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
               )}
               {existingOAuthDisplayName && (
                 <Badge variant='red' size='lg' dot className='max-w-full'>
-                  A secret named "{existingOAuthDisplayName.displayName}" already exists.
+                  {t('settings.secrets.secretNameExists').replace('{name}', existingOAuthDisplayName.displayName)}
                 </Badge>
               )}
               {selectedExistingEnvCredential && (
                 <Badge variant='red' size='lg' dot className='max-w-full'>
-                  A secret with key "{selectedExistingEnvCredential.displayName}" already exists.
+                  {t('settings.secrets.secretKeyExists').replace('{key}', selectedExistingEnvCredential.displayName)}
                 </Badge>
               )}
               {!selectedExistingEnvCredential && crossScopeEnvConflict && (
                 <Badge variant='amber' size='lg' dot className='max-w-full'>
-                  A workspace secret with key "{crossScopeEnvConflict.envKey}" already exists.
-                  Workspace secrets take precedence at runtime.
+                  {t('settings.secrets.workspaceKeyConflict').replace('{key}', crossScopeEnvConflict.envKey || '')}
                 </Badge>
               )}
             </div>
           )}
           <div className='flex flex-col gap-[12px]'>
             <div>
-              <Label>Type</Label>
+              <Label>{t('common.type')}</Label>
               <div className='mt-[6px]'>
                 <Combobox
-                  options={createTypeOptions.map((option) => ({
+                  options={createTypeOptionKeys.map((option) => ({
                     value: option.value,
-                    label: option.label,
+                    label: t(option.labelKey),
                   }))}
                   value={
-                    createTypeOptions.find((option) => option.value === createType)?.label || ''
+                    (() => {
+                      const opt = createTypeOptionKeys.find((option) => option.value === createType)
+                      return opt ? t(opt.labelKey) : ''
+                    })()
                   }
                   selectedValue={createType}
                   onChange={(value) => {
@@ -1131,7 +1135,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                       setCreateOAuthProviderId(oauthConnections[0]?.providerId || '')
                     }
                   }}
-                  placeholder='Select type'
+                  placeholder={t('settings.secrets.selectType')}
                 />
               </div>
             </div>
@@ -1140,23 +1144,23 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
               <div className='flex flex-col gap-[10px]'>
                 <div>
                   <Label>
-                    Display name<span className='ml-1'>*</span>
+                    {t('settings.secrets.displayName')}<span className='ml-1'>*</span>
                   </Label>
                   <Input
                     value={createDisplayName}
                     onChange={(event) => setCreateDisplayName(event.target.value)}
-                    placeholder='Secret name'
+                    placeholder={t('settings.secrets.secretName')}
                     autoComplete='off'
                     data-lpignore='true'
                     className='mt-[6px]'
                   />
                 </div>
                 <div>
-                  <Label>Description</Label>
+                  <Label>{t('common.description')}</Label>
                   <Textarea
                     value={createDescription}
                     onChange={(event) => setCreateDescription(event.target.value)}
-                    placeholder='Optional description'
+                    placeholder={t('settings.secrets.optionalDescription')}
                     maxLength={500}
                     autoComplete='off'
                     data-lpignore='true'
@@ -1164,7 +1168,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                   />
                 </div>
                 <div>
-                  <Label>Account</Label>
+                  <Label>{t('settings.secrets.account')}</Label>
                   <div className='mt-[6px]'>
                     <Combobox
                       options={oauthServiceOptions}
@@ -1177,9 +1181,9 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                         setCreateOAuthProviderId(value)
                         setCreateError(null)
                       }}
-                      placeholder='Select OAuth service'
+                      placeholder={t('settings.secrets.selectOAuthService')}
                       searchable
-                      searchPlaceholder='Search services...'
+                      searchPlaceholder={t('settings.secrets.searchServices')}
                       overlayContent={
                         createOAuthProviderId
                           ? (() => {
@@ -1210,11 +1214,11 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                     <div>
                       <div className='grid grid-cols-[minmax(0,1fr)_8px_minmax(0,1fr)] items-end'>
                         <Label>
-                          Key<span className='ml-1'>*</span>
+                          {t('settings.secrets.key')}<span className='ml-1'>*</span>
                         </Label>
                         <div />
                         <Label>
-                          Value<span className='ml-1'>*</span>
+                          {t('common.value')}<span className='ml-1'>*</span>
                         </Label>
                       </div>
                       <div className='mt-[8px] grid grid-cols-[minmax(0,1fr)_8px_minmax(0,1fr)] items-center'>
@@ -1257,7 +1261,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                           onChange={(event) => setCreateEnvValue(event.target.value)}
                           onFocus={() => setIsCreateEnvValueFocused(true)}
                           onBlur={() => setIsCreateEnvValueFocused(false)}
-                          placeholder='Value'
+                          placeholder={t('common.value')}
                           autoComplete='new-password'
                           autoCapitalize='none'
                           autoCorrect='off'
@@ -1273,11 +1277,11 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                       </div>
                     </div>
                     <div>
-                      <Label>Description</Label>
+                      <Label>{t('common.description')}</Label>
                       <Textarea
                         value={createDescription}
                         onChange={(event) => setCreateDescription(event.target.value)}
-                        placeholder='Optional description'
+                        placeholder={t('settings.secrets.optionalDescription')}
                         maxLength={500}
                         autoComplete='off'
                         className='mt-[6px] min-h-[80px] resize-none'
@@ -1286,11 +1290,11 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                   </>
                 ) : (
                   <div>
-                    <Label>Secrets ({createBulkEntries.length})</Label>
+                    <Label>{t('settings.secrets.secretsCount').replace('{count}', String(createBulkEntries.length))}</Label>
                     <div className='mt-[6px] grid grid-cols-[minmax(0,1fr)_8px_minmax(0,1fr)_28px] items-end'>
-                      <span className='text-[11px] text-[var(--text-secondary)]'>Key</span>
+                      <span className='text-[11px] text-[var(--text-secondary)]'>{t('settings.secrets.key')}</span>
                       <div />
-                      <span className='text-[11px] text-[var(--text-secondary)]'>Value</span>
+                      <span className='text-[11px] text-[var(--text-secondary)]'>{t('common.value')}</span>
                       <div />
                     </div>
                     <div className='mt-[4px] flex max-h-[240px] flex-col gap-[4px] overflow-y-auto'>
@@ -1323,7 +1327,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                               updated[index] = { ...entry, value: event.target.value }
                               setCreateBulkEntries(updated)
                             }}
-                            placeholder='Value'
+                            placeholder={t('common.value')}
                             autoComplete='new-password'
                             autoCapitalize='none'
                             autoCorrect='off'
@@ -1351,7 +1355,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                   </div>
                 )}
                 <div>
-                  <Label className='block'>Scope</Label>
+                  <Label className='block'>{t('settings.secrets.scope')}</Label>
                   <div className='mt-[8px]'>
                     <ButtonGroup
                       value={createSecretScope}
@@ -1361,13 +1365,13 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                         value='workspace'
                         className='h-[28px] min-w-[80px] px-[10px] py-0 text-[12px]'
                       >
-                        Workspace
+                        {t('settings.secrets.workspace')}
                       </ButtonGroupItem>
                       <ButtonGroupItem
                         value='personal'
                         className='h-[28px] min-w-[72px] px-[10px] py-0 text-[12px]'
                       >
-                        Personal
+                        {t('settings.secrets.personal')}
                       </ButtonGroupItem>
                     </ButtonGroup>
                   </div>
@@ -1378,7 +1382,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
         </ModalBody>
         <ModalFooter>
           <Button variant='default' onClick={() => setShowCreateModal(false)}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             variant='tertiary'
@@ -1402,15 +1406,15 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
           >
             {createType === 'oauth'
               ? connectOAuthService.isPending
-                ? 'Connecting...'
-                : 'Connect'
+                ? t('settings.secrets.connecting')
+                : t('settings.secrets.connect')
               : createSecretInputMode === 'bulk'
                 ? createCredential.isPending ||
                   savePersonalEnvironment.isPending ||
                   upsertWorkspaceEnvironment.isPending
-                  ? 'Importing...'
-                  : 'Import all'
-                : 'Create'}
+                  ? t('settings.secrets.importing')
+                  : t('settings.secrets.importAll')
+                : t('common.create')}
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -1445,16 +1449,15 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
     >
       <ModalContent size='sm'>
         <ModalHeader>
-          {credentialToDelete?.type === 'oauth' ? 'Disconnect Secret' : 'Delete Secret'}
+          {credentialToDelete?.type === 'oauth' ? t('settings.secrets.disconnectSecret') : t('settings.secrets.deleteSecret')}
         </ModalHeader>
         <ModalBody>
           <p className='text-[12px] text-[var(--text-secondary)]'>
-            Are you sure you want to{' '}
-            {credentialToDelete?.type === 'oauth' ? 'disconnect' : 'delete'}{' '}
+            {credentialToDelete?.type === 'oauth' ? t('settings.secrets.confirmDisconnect') : t('common.deleteConfirm')}{' '}
             <span className='font-medium text-[var(--text-primary)]'>
               {credentialToDelete?.displayName}
             </span>
-            ? <span className='text-[var(--text-error)]'>This action cannot be undone.</span>
+            ? <span className='text-[var(--text-error)]'>{t('common.cannotBeUndone')}</span>
           </p>
           {deleteError && (
             <div className='mt-[12px] rounded-[8px] border border-red-500/50 bg-red-50 p-[12px] dark:bg-red-950/30'>
@@ -1467,7 +1470,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
         </ModalBody>
         <ModalFooter>
           <Button variant='default' onClick={handleCloseDeleteDialog}>
-            Cancel
+            {t('common.cancel')}
           </Button>
           <Button
             variant='destructive'
@@ -1475,10 +1478,10 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
             disabled={deleteCredential.isPending || disconnectOAuthService.isPending}
           >
             {deleteCredential.isPending || disconnectOAuthService.isPending
-              ? 'Deleting...'
+              ? t('common.deleting')
               : credentialToDelete?.type === 'oauth'
-                ? 'Disconnect'
-                : 'Delete'}
+                ? t('settings.secrets.disconnect')
+                : t('common.delete')}
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -1488,15 +1491,15 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
   const unsavedChangesAlertJsx = (
     <Modal open={showUnsavedChangesAlert} onOpenChange={setShowUnsavedChangesAlert}>
       <ModalContent size='sm'>
-        <ModalHeader>Unsaved Changes</ModalHeader>
+        <ModalHeader>{t('settings.secrets.unsavedChanges')}</ModalHeader>
         <ModalBody>
           <p className='text-[12px] text-[var(--text-secondary)]'>
-            You have unsaved changes. Are you sure you want to discard them?
+            {t('settings.secrets.unsavedChangesMessage')}
           </p>
         </ModalBody>
         <ModalFooter>
           <Button variant='default' onClick={() => setShowUnsavedChangesAlert(false)}>
-            Keep Editing
+            {t('settings.secrets.keepEditing')}
           </Button>
           <Button
             variant='destructive'
@@ -1506,7 +1509,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                 : handleDiscardChanges
             }
           >
-            Discard Changes
+            {t('settings.secrets.discardChanges')}
           </Button>
         </ModalFooter>
       </ModalContent>
@@ -1533,15 +1536,15 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                         )}
                       </div>
                       <div className='min-w-0'>
-                        <p className='text-[11px] text-[var(--text-tertiary)]'>Connected service</p>
+                        <p className='text-[11px] text-[var(--text-tertiary)]'>{t('settings.secrets.connectedService')}</p>
                         <p className='truncate font-medium text-[13px] text-[var(--text-primary)]'>
-                          {resolveProviderLabel(selectedCredential.providerId) || 'Unknown service'}
+                          {resolveProviderLabel(selectedCredential.providerId) || t('settings.secrets.unknownService')}
                         </p>
                       </div>
                     </div>
                     <div className='flex flex-shrink-0 items-center gap-[8px]'>
                       <Badge variant={typeBadgeVariant(selectedCredential.type)}>
-                        {typeLabel(selectedCredential.type)}
+                        {typeLabel(selectedCredential.type, t)}
                       </Badge>
                       {selectedCredential.role && (
                         <Badge
@@ -1558,11 +1561,11 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
               ) : (
                 <div className='flex flex-col gap-[10px]'>
                   <div className='flex items-center justify-between gap-[6px] pl-[2px]'>
-                    <Label>Type</Label>
+                    <Label>{t('common.type')}</Label>
                   </div>
                   <div className='flex items-center gap-[8px]'>
                     <Badge variant={typeBadgeVariant(selectedCredential.type)}>
-                      {typeLabel(selectedCredential.type)}
+                      {typeLabel(selectedCredential.type, t)}
                     </Badge>
                     {selectedCredential.role && (
                       <Badge
@@ -1580,7 +1583,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                   <div className='flex flex-col gap-[10px]'>
                     <div className='flex items-center justify-between gap-[6px] pl-[2px]'>
                       <Label className='flex items-center gap-[6px]'>
-                        Display Name
+                        {t('settings.secrets.displayName')}
                         <Tooltip.Root>
                           <Tooltip.Trigger asChild>
                             <button
@@ -1591,7 +1594,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                                 setCopyIdSuccess(true)
                                 setTimeout(() => setCopyIdSuccess(false), 2000)
                               }}
-                              aria-label='Copy value'
+                              aria-label={t('settings.secrets.copyValue')}
                             >
                               {copyIdSuccess ? (
                                 <Check className='h-3 w-3 text-green-500' />
@@ -1601,7 +1604,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                             </button>
                           </Tooltip.Trigger>
                           <Tooltip.Content>
-                            {copyIdSuccess ? 'Copied!' : 'Copy secret ID'}
+                            {copyIdSuccess ? t('common.copied') : t('settings.secrets.copySecretId')}
                           </Tooltip.Content>
                         </Tooltip.Root>
                       </Label>
@@ -1618,13 +1621,13 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
 
                   <div className='flex flex-col gap-[10px]'>
                     <div className='flex items-center justify-between gap-[6px] pl-[2px]'>
-                      <Label>Description</Label>
+                      <Label>{t('common.description')}</Label>
                     </div>
                     <Textarea
                       id='credential-description'
                       value={selectedDescriptionDraft}
                       onChange={(event) => setSelectedDescriptionDraft(event.target.value)}
-                      placeholder='Add a description...'
+                      placeholder={t('settings.secrets.addDescription')}
                       maxLength={500}
                       autoComplete='off'
                       data-lpignore='true'
@@ -1637,7 +1640,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                 <>
                   <div className='flex flex-col gap-[10px]'>
                     <div className='flex items-center justify-between gap-[6px] pl-[2px]'>
-                      <Label>Secret key</Label>
+                      <Label>{t('settings.secrets.secretKey')}</Label>
                     </div>
                     <Input
                       id='credential-env-key'
@@ -1650,14 +1653,14 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
 
                   <div className='flex flex-col gap-[10px]'>
                     <div className='flex items-center justify-between gap-[6px] pl-[2px]'>
-                      <Label>Secret value</Label>
+                      <Label>{t('settings.secrets.secretValue')}</Label>
                       {canEditSelectedEnvValue && (
                         <button
                           type='button'
                           className='-my-1 h-5 px-2 py-0 text-[11px] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
                           onClick={() => setIsEditingEnvValue((value) => !value)}
                         >
-                          {isEditingEnvValue ? 'Hide' : 'Edit'}
+                          {isEditingEnvValue ? t('settings.secrets.hide') : t('common.edit')}
                         </button>
                       )}
                     </div>
@@ -1684,13 +1687,13 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
 
                   <div className='flex flex-col gap-[10px]'>
                     <div className='flex items-center justify-between gap-[6px] pl-[2px]'>
-                      <Label>Description</Label>
+                      <Label>{t('common.description')}</Label>
                     </div>
                     <Textarea
                       id='credential-description'
                       value={selectedDescriptionDraft}
                       onChange={(event) => setSelectedDescriptionDraft(event.target.value)}
-                      placeholder='Add a description...'
+                      placeholder={t('settings.secrets.addDescription')}
                       maxLength={500}
                       autoComplete='off'
                       disabled={!isSelectedAdmin}
@@ -1708,7 +1711,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
 
               <div className='flex flex-col gap-[10px]'>
                 <div className='flex items-center justify-between gap-[6px] pl-[2px]'>
-                  <Label>Members ({activeMembers.length})</Label>
+                  <Label>{t('settings.secrets.membersCount').replace('{count}', String(activeMembers.length))}</Label>
                 </div>
 
                 {membersLoading ? (
@@ -1735,13 +1738,15 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                         {isSelectedAdmin ? (
                           <>
                             <Combobox
-                              options={roleOptions.map((option) => ({
+                              options={roleOptionKeys.map((option) => ({
                                 value: option.value,
-                                label: option.label,
+                                label: t(option.labelKey),
                               }))}
                               value={
-                                roleOptions.find((option) => option.value === member.role)?.label ||
-                                ''
+                                (() => {
+                                  const opt = roleOptionKeys.find((option) => option.value === member.role)
+                                  return opt ? t(opt.labelKey) : ''
+                                })()
                               }
                               selectedValue={member.role}
                               onChange={(value) =>
@@ -1750,7 +1755,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                                   value as WorkspaceCredentialRole
                                 )
                               }
-                              placeholder='Role'
+                              placeholder={t('settings.secrets.role')}
                               disabled={member.role === 'admin' && adminMemberCount <= 1}
                               size='sm'
                             />
@@ -1760,7 +1765,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                                 onClick={() => handleRemoveMember(member.userId)}
                                 disabled={member.role === 'admin' && adminMemberCount <= 1}
                               >
-                                Remove
+                                {t('common.remove')}
                               </Button>
                             ) : (
                               <div />
@@ -1786,20 +1791,23 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                           }
                           selectedValue={memberUserId}
                           onChange={setMemberUserId}
-                          placeholder='Add member...'
+                          placeholder={t('settings.secrets.addMember')}
                           size='sm'
                         />
                         <Combobox
-                          options={roleOptions.map((option) => ({
+                          options={roleOptionKeys.map((option) => ({
                             value: option.value,
-                            label: option.label,
+                            label: t(option.labelKey),
                           }))}
                           value={
-                            roleOptions.find((option) => option.value === memberRole)?.label || ''
+                            (() => {
+                              const opt = roleOptionKeys.find((option) => option.value === memberRole)
+                              return opt ? t(opt.labelKey) : ''
+                            })()
                           }
                           selectedValue={memberRole}
                           onChange={(value) => setMemberRole(value as WorkspaceCredentialRole)}
-                          placeholder='Role'
+                          placeholder={t('settings.secrets.role')}
                           size='sm'
                         />
                         <Button
@@ -1807,7 +1815,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                           onClick={handleAddMember}
                           disabled={!memberUserId || upsertMember.isPending}
                         >
-                          Add
+                          {t('common.add')}
                         </Button>
                       </div>
                     )}
@@ -1827,9 +1835,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                       onClick={handleReconnectOAuth}
                       disabled={connectOAuthService.isPending}
                     >
-                      {`Reconnect to ${
-                        resolveProviderLabel(selectedCredential.providerId) || 'service'
-                      }`}
+                      {t('settings.secrets.reconnectTo').replace('{provider}', resolveProviderLabel(selectedCredential.providerId) || t('settings.secrets.service'))}
                     </Button>
                   )}
                   {selectedCredential.type === 'env_personal' && (
@@ -1839,7 +1845,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                       disabled={isPromoting || deleteCredential.isPending}
                     >
                       <Share2 className='mr-[6px] h-[13px] w-[13px]' />
-                      Promote to workspace
+                      {t('settings.secrets.promoteToWorkspace')}
                     </Button>
                   )}
                   {selectedCredential.type === 'oauth' &&
@@ -1850,7 +1856,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                         disabled={isShareingWithWorkspace || workspaceUserOptions.length === 0}
                       >
                         <Share2 className='mr-[6px] h-[13px] w-[13px]' />
-                        {isShareingWithWorkspace ? 'Sharing...' : 'Share'}
+                        {isShareingWithWorkspace ? t('settings.secrets.sharing') : t('settings.secrets.share')}
                       </Button>
                     )}
                   <Button
@@ -1860,14 +1866,14 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                       deleteCredential.isPending || isPromoting || disconnectOAuthService.isPending
                     }
                   >
-                    {selectedCredential.type === 'oauth' ? 'Disconnect' : 'Delete'}
+                    {selectedCredential.type === 'oauth' ? t('settings.secrets.disconnect') : t('common.delete')}
                   </Button>
                 </>
               )}
             </div>
             <div className='flex items-center gap-[8px]'>
               <Button onClick={handleBackAttempt} variant='default'>
-                Back
+                {t('common.back')}
               </Button>
               {isSelectedAdmin && (
                 <Button
@@ -1875,7 +1881,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                   onClick={handleSaveDetails}
                   disabled={!isDetailsDirty || isSavingDetails}
                 >
-                  {isSavingDetails ? 'Saving...' : 'Save'}
+                  {isSavingDetails ? t('common.saving') : t('common.save')}
                 </Button>
               )}
             </div>
@@ -1900,7 +1906,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
               strokeWidth={2}
             />
             <UiInput
-              placeholder='Search secrets...'
+              placeholder={t('settings.secrets.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               disabled={credentialsLoading}
@@ -1913,7 +1919,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
             variant='tertiary'
           >
             <Plus className='mr-[6px] h-[13px] w-[13px]' />
-            Add
+            {t('common.add')}
           </Button>
         </div>
 
@@ -1926,7 +1932,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
             </div>
           ) : !hasCredentials ? (
             <div className='flex h-full items-center justify-center text-[13px] text-[var(--text-muted)]'>
-              Click "Add" above to get started
+              {t('settings.secrets.emptyState')}
             </div>
           ) : (
             <div className='flex flex-col gap-[8px]'>
@@ -1949,13 +1955,13 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                           {credential.displayName}
                         </span>
                         <p className='truncate text-[13px] text-[var(--text-muted)]'>
-                          {credential.description || 'No description'}
+                          {credential.description || t('settings.secrets.noDescription')}
                         </p>
                       </div>
                     </div>
                     <div className='flex flex-shrink-0 items-center gap-[4px]'>
                       <Button variant='default' onClick={() => handleSelectCredential(credential)}>
-                        Details
+                        {t('settings.workflowMcp.tabs.details')}
                       </Button>
                       {credential.role === 'admin' && (
                         <Button
@@ -1963,7 +1969,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
                           onClick={() => handleDeleteClick(credential)}
                           disabled={deleteCredential.isPending || disconnectOAuthService.isPending}
                         >
-                          Delete
+                          {t('common.delete')}
                         </Button>
                       )}
                     </div>
@@ -1972,7 +1978,7 @@ export function CredentialsManager({ onOpenChange }: CredentialsManagerProps) {
               })}
               {showNoResults && (
                 <div className='py-[16px] text-center text-[13px] text-[var(--text-muted)]'>
-                  No secrets found matching &ldquo;{searchTerm}&rdquo;
+                  {t('settings.secrets.noResults').replace('{term}', searchTerm)}
                 </div>
               )}
             </div>

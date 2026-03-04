@@ -80,3 +80,4 @@ export const HANDLE_POSITIONS = {
   /** Subflow start handle Y offset (header 50px + pill offset 16px + pill center 14px) */
   SUBFLOW_START_Y_OFFSET: 80,
 } as const;
+

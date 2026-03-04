@@ -320,8 +320,8 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
           className='flex min-h-0 flex-1 flex-col'
         >
           <SModalTabsList activeValue={activeServerTab}>
-            <SModalTabsTrigger value='details'>Details</SModalTabsTrigger>
-            <SModalTabsTrigger value='workflows'>Workflows</SModalTabsTrigger>
+            <SModalTabsTrigger value='details'>{t('settings.workflowMcp.tabs.details')}</SModalTabsTrigger>
+            <SModalTabsTrigger value='workflows'>{t('settings.workflowMcp.tabs.workflows')}</SModalTabsTrigger>
           </SModalTabsList>
 
           <SModalTabsBody>
@@ -329,7 +329,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
               <div className='flex flex-col gap-[16px]'>
                 <div className='flex items-center justify-between'>
                   <span className='font-medium text-[13px] text-[var(--text-primary)]'>
-                    Workflows
+                    {t('settings.workflowMcp.tabs.workflows')}
                   </span>
                   {showAddDisabledTooltip ? (
                     <Tooltip.Root>
@@ -341,12 +341,12 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                             disabled
                           >
                             <Plus className='mr-[6px] h-[13px] w-[13px]' />
-                            Add
+                            {t('common.add')}
                           </Button>
                         </div>
                       </Tooltip.Trigger>
                       <Tooltip.Content>
-                        All deployed workflows have been added to this server.
+                        {t('settings.workflowMcp.allWorkflowsAdded')}
                       </Tooltip.Content>
                     </Tooltip.Root>
                   ) : (
@@ -363,7 +363,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
 
                 {tools.length === 0 ? (
                   <p className='text-[13px] text-[var(--text-muted)]'>
-                    No workflows added yet. Click "Add" to add a deployed workflow.
+                    {t('settings.workflowMcp.noWorkflows')}
                   </p>
                 ) : (
                   <div className='flex flex-col gap-[8px]'>
@@ -404,7 +404,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
               <div className='flex flex-col gap-[16px]'>
                 <div className='flex flex-col gap-[8px]'>
                   <span className='font-medium text-[13px] text-[var(--text-primary)]'>
-                    Server Name
+                    {t('settings.workflowMcp.serverName')}
                   </span>
                   <p className='text-[14px] text-[var(--text-secondary)]'>{server.name}</p>
                 </div>
@@ -412,7 +412,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                 {server.description?.trim() && (
                   <div className='flex flex-col gap-[8px]'>
                     <span className='font-medium text-[13px] text-[var(--text-primary)]'>
-                      Description
+                      {t('common.description')}
                     </span>
                     <p className='text-[14px] text-[var(--text-secondary)]'>{server.description}</p>
                   </div>
@@ -421,13 +421,13 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                 <div className='flex gap-[24px]'>
                   <div className='flex flex-col gap-[8px]'>
                     <span className='font-medium text-[13px] text-[var(--text-primary)]'>
-                      Transport
+                      {t('settings.workflowMcp.transport')}
                     </span>
                     <p className='text-[14px] text-[var(--text-secondary)]'>Streamable-HTTP</p>
                   </div>
                   <div className='flex flex-col gap-[8px]'>
                     <span className='font-medium text-[13px] text-[var(--text-primary)]'>
-                      Access
+                      {t('settings.workflowMcp.access')}
                     </span>
                     <p className='text-[14px] text-[var(--text-secondary)]'>
                       {server.isPublic ? t('settings.workflowMcp.authType.public') : t('settings.workflowMcp.authType.apiKey')}
@@ -445,17 +445,17 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                 <div>
                   <div className='mb-[6.5px] flex items-center justify-between'>
                     <span className='block pl-[2px] font-medium text-[13px] text-[var(--text-primary)]'>
-                      MCP Client
+                      {t('settings.workflowMcp.mcpClient')}
                     </span>
                   </div>
                   <ButtonGroup
                     value={activeConfigTab}
                     onValueChange={(v) => setActiveConfigTab(v as McpClientType)}
                   >
-                    <ButtonGroupItem value='cursor'>Cursor</ButtonGroupItem>
-                    <ButtonGroupItem value='claude-code'>Claude Code</ButtonGroupItem>
-                    <ButtonGroupItem value='claude-desktop'>Claude Desktop</ButtonGroupItem>
-                    <ButtonGroupItem value='vscode'>VS Code</ButtonGroupItem>
+                    <ButtonGroupItem value='cursor'>{t('settings.workflowMcp.clients.cursor')}</ButtonGroupItem>
+                    <ButtonGroupItem value='claude-code'>{t('settings.workflowMcp.clients.claudeCode')}</ButtonGroupItem>
+                    <ButtonGroupItem value='claude-desktop'>{t('settings.workflowMcp.clients.claudeDesktop')}</ButtonGroupItem>
+                    <ButtonGroupItem value='vscode'>{t('settings.workflowMcp.clients.vsCode')}</ButtonGroupItem>
                   </ButtonGroup>
                 </div>
 
@@ -519,20 +519,20 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
             {activeServerTab === 'details' && (
               <>
                 <Button onClick={handleOpenEditServer} variant='default'>
-                  Edit Server
+                  {t('settings.workflowMcp.editServer')}
                 </Button>
                 <Button
                   onClick={() => setShowAddWorkflow(true)}
                   variant='default'
                   disabled={!canAddWorkflow}
                 >
-                  Add Workflows
+                  {t('settings.workflowMcp.addWorkflow')}
                 </Button>
               </>
             )}
           </div>
           <Button onClick={onBack} variant='tertiary'>
-            Back
+            {t('common.back')}
           </Button>
         </div>
       </div>
@@ -542,11 +542,11 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
           <ModalHeader>{t('settings.workflowMcp.removeWorkflow')}</ModalHeader>
           <ModalBody>
             <p className='text-[12px] text-[var(--text-secondary)]'>
-              Are you sure you want to remove{' '}
+              {t('settings.workflowMcp.removeConfirmBefore')}{' '}
               <span className='font-medium text-[var(--text-primary)]'>
                 {toolToDelete?.toolName}
               </span>{' '}
-              from this server? The workflow will remain deployed and can be added back later.
+              {t('settings.workflowMcp.removeConfirmAfter')}
             </p>
           </ModalBody>
           <ModalFooter>
@@ -558,7 +558,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
               onClick={handleDeleteTool}
               disabled={deleteToolMutation.isPending}
             >
-              {deleteToolMutation.isPending ? 'Removing...' : t('common.remove')}
+              {deleteToolMutation.isPending ? t('common.removing') : t('common.remove')}
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -620,7 +620,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                             </div>
                             <div className='border-[var(--border-1)] border-t px-[10px] pt-[6px] pb-[10px]'>
                               <div className='flex flex-col gap-[6px]'>
-                                <Label className='text-[13px]'>Description</Label>
+                                <Label className='text-[13px]'>{t('common.description')}</Label>
                                 <EmcnInput
                                   value={editingParameterDescriptions[name] || ''}
                                   onChange={(e) =>
@@ -629,7 +629,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                                       [name]: e.target.value,
                                     }))
                                   }
-                                  placeholder={`Enter description for ${name}`}
+                                  placeholder={t('settings.workflowMcp.enterDescription').replace('{name}', name)}
                                 />
                               </div>
                             </div>
@@ -638,7 +638,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                       </div>
                     ) : (
                       <p className='text-[13px] text-[var(--text-muted)]'>
-                        No inputs configured for this workflow.
+                        {t('settings.workflowMcp.noInputs')}
                       </p>
                     )}
                   </div>
@@ -775,7 +775,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
               onClick={handleAddWorkflow}
               disabled={!selectedWorkflowId || addToolMutation.isPending}
             >
-              {addToolMutation.isPending ? 'Adding...' : t('settings.workflowMcp.addWorkflow')}
+              {addToolMutation.isPending ? t('settings.workflowMcp.adding') : t('settings.workflowMcp.addWorkflow')}
             </Button>
           </ModalFooter>
         </ModalContent>
@@ -793,7 +793,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
           <ModalHeader>{t('settings.workflowMcp.editServer')}</ModalHeader>
           <ModalBody>
             <div className='flex flex-col gap-[12px]'>
-              <FormField label='Server Name'>
+              <FormField label={t('settings.workflowMcp.serverName')}>
                 <EmcnInput
                   placeholder={t('settings.workflowMcp.serverNamePlaceholder')}
                   value={editServerName}
@@ -802,7 +802,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                 />
               </FormField>
 
-              <FormField label='Description'>
+              <FormField label={t('common.description')}>
                 <Textarea
                   placeholder={t('settings.workflowMcp.descriptionPlaceholder')}
                   value={editServerDescription}
@@ -811,7 +811,7 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
                 />
               </FormField>
 
-              <FormField label='Access'>
+              <FormField label={t('settings.workflowMcp.access')}>
                 <ButtonGroup
                   value={editServerIsPublic ? 'public' : 'private'}
                   onValueChange={(value) => setEditServerIsPublic(value === 'public')}
@@ -822,8 +822,8 @@ function ServerDetailView({ workspaceId, serverId, onBack }: ServerDetailViewPro
               </FormField>
               <p className='text-[11px] text-[var(--text-muted)]'>
                 {editServerIsPublic
-                  ? 'Anyone with the URL can call this server without authentication'
-                  : 'Requests must include your Sim API key in the X-API-Key header'}
+                  ? t('settings.workflowMcp.publicAccessDesc')
+                  : t('settings.workflowMcp.privateAccessDesc')}
               </p>
             </div>
           </ModalBody>
@@ -982,7 +982,7 @@ export function WorkflowMcpServers() {
         {shouldShowForm && !isLoading && (
           <div className='rounded-[8px] border p-[10px]'>
             <div className='flex flex-col gap-[12px]'>
-              <FormField label='Server Name'>
+              <FormField label={t('settings.workflowMcp.serverName')}>
                 <EmcnInput
                   placeholder={t('settings.workflowMcp.serverNamePlaceholder')}
                   value={formData.name}
@@ -991,7 +991,7 @@ export function WorkflowMcpServers() {
                 />
               </FormField>
 
-              <FormField label='Description'>
+              <FormField label={t('common.description')}>
                 <Textarea
                   placeholder={t('settings.workflowMcp.descriptionPlaceholder')}
                   value={formData.description}
@@ -1000,7 +1000,7 @@ export function WorkflowMcpServers() {
                 />
               </FormField>
 
-              <FormField label='Workflows'>
+              <FormField label={t('settings.workflowMcp.tabs.workflows')}>
                 <Combobox
                   options={workflowOptions}
                   multiSelect
@@ -1008,22 +1008,24 @@ export function WorkflowMcpServers() {
                   onMultiSelectChange={setSelectedWorkflowIds}
                   placeholder={t('settings.workflowMcp.selectWorkflows')}
                   searchable
-                  searchPlaceholder='Search workflows...'
+                  searchPlaceholder={t('settings.workflowMcp.searchWorkflows')}
                   isLoading={isLoadingWorkflows}
                   disabled={createServerMutation.isPending}
-                  emptyMessage='No deployed workflows available'
+                  emptyMessage={t('settings.workflowMcp.noDeployedWorkflows')}
                   overlayContent={
                     selectedWorkflowIds.length > 0 ? (
                       <span className='text-[var(--text-primary)]'>
-                        {selectedWorkflowIds.length} workflow
-                        {selectedWorkflowIds.length !== 1 ? 's' : ''} selected
+                        {(selectedWorkflowIds.length === 1
+                          ? t('settings.workflowMcp.workflowSelectedOne')
+                          : t('settings.workflowMcp.workflowsSelected')
+                        ).replace('{count}', String(selectedWorkflowIds.length))}
                       </span>
                     ) : undefined
                   }
                 />
               </FormField>
 
-              <FormField label='Access'>
+              <FormField label={t('settings.workflowMcp.access')}>
                 <div className='flex items-center gap-[12px]'>
                   <ButtonGroup
                     value={formData.isPublic ? 'public' : 'private'}
@@ -1036,7 +1038,7 @@ export function WorkflowMcpServers() {
                   </ButtonGroup>
                   {formData.isPublic && (
                     <span className='text-[11px] text-[var(--text-muted)]'>
-                      No authentication required
+                      {t('settings.workflowMcp.noAuthRequired')}
                     </span>
                   )}
                 </div>
@@ -1051,7 +1053,7 @@ export function WorkflowMcpServers() {
                   disabled={!isFormValid || createServerMutation.isPending}
                   variant='tertiary'
                 >
-                  {createServerMutation.isPending ? 'Adding...' : 'Add Server'}
+                  {createServerMutation.isPending ? t('settings.workflowMcp.adding') : t('settings.workflowMcp.addServer')}
                 </Button>
               </div>
             </div>
@@ -1062,7 +1064,7 @@ export function WorkflowMcpServers() {
           {error ? (
             <div className='flex h-full flex-col items-center justify-center gap-[8px]'>
               <p className='text-[#DC2626] text-[11px] leading-tight dark:text-[#F87171]'>
-                {error instanceof Error ? error.message : 'Failed to load MCP servers'}
+                {error instanceof Error ? error.message : t('settings.workflowMcp.failedLoad')}
               </p>
             </div>
           ) : isLoading ? (
@@ -1075,7 +1077,10 @@ export function WorkflowMcpServers() {
             <div className='flex flex-col gap-[8px]'>
               {filteredServers.map((server) => {
                 const count = server.toolCount || 0
-                const toolsLabel = `${count} tool${count !== 1 ? 's' : ''}`
+                const toolsLabel = (count === 1
+                  ? t('settings.workflowMcp.toolCountOne')
+                  : t('settings.workflowMcp.toolCount')
+                ).replace('{count}', String(count))
                 const isDeleting = deletingServers.has(server.id)
                 return (
                   <div key={server.id} className='flex items-center justify-between gap-[12px]'>
@@ -1086,7 +1091,7 @@ export function WorkflowMcpServers() {
                         </span>
                         {server.isPublic && (
                           <Badge variant='outline' size='sm'>
-                            Public
+                            {t('settings.workflowMcp.authType.public')}
                           </Badge>
                         )}
                       </div>
@@ -1094,7 +1099,7 @@ export function WorkflowMcpServers() {
                     </div>
                     <div className='flex flex-shrink-0 items-center gap-[4px]'>
                       <Button variant='default' onClick={() => setSelectedServerId(server.id)}>
-                        Details
+                        {t('settings.workflowMcp.tabs.details')}
                       </Button>
                       <Button
                         variant='ghost'
@@ -1109,7 +1114,7 @@ export function WorkflowMcpServers() {
               })}
               {showNoResults && (
                 <div className='py-[16px] text-center text-[13px] text-[var(--text-muted)]'>
-                  No servers found matching "{searchTerm}"
+                  {t('settings.workflowMcp.noResults').replace('{term}', searchTerm)}
                 </div>
               )}
             </div>
@@ -1122,9 +1127,9 @@ export function WorkflowMcpServers() {
           <ModalHeader>{t('settings.workflowMcp.deleteServer')}</ModalHeader>
           <ModalBody>
             <p className='text-[12px] text-[var(--text-secondary)]'>
-              Are you sure you want to delete{' '}
+              {t('common.deleteConfirm')}{' '}
               <span className='font-medium text-[var(--text-primary)]'>{serverToDelete?.name}</span>
-              ? <span className='text-[var(--text-error)]'>This action cannot be undone.</span>
+              ? <span className='text-[var(--text-error)]'>{t('common.cannotBeUndone')}</span>
             </p>
           </ModalBody>
           <ModalFooter>

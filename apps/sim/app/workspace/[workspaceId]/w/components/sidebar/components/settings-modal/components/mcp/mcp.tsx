@@ -166,14 +166,14 @@ function formatTransportLabel(transport: string): string {
 /**
  * Formats a tools list for display in the server list.
  */
-function formatToolsLabel(tools: McpTool[], connectionStatus?: string): string {
+function formatToolsLabel(tools: McpTool[], connectionStatus: string | undefined, t: (key: string) => string): string {
   if (connectionStatus === 'error') {
-    return 'Unable to connect'
+    return t('settings.mcp.unableToConnect')
   }
   const count = tools.length
-  const plural = count !== 1 ? 's' : ''
-  const names = count > 0 ? `: ${tools.map((t) => t.name).join(', ')}` : ''
-  return `${count} tool${plural}${names}`
+  const toolWord = count === 1 ? t('settings.mcp.tool') : t('settings.mcp.tools')
+  const names = count > 0 ? `: ${tools.map((tool) => tool.name).join(', ')}` : ''
+  return `${count} ${toolWord}${names}`
 }
 
 /**
@@ -181,12 +181,13 @@ function formatToolsLabel(tools: McpTool[], connectionStatus?: string): string {
  */
 function getTestButtonLabel(
   testResult: McpServerTestResult | null,
-  isTestingConnection: boolean
+  isTestingConnection: boolean,
+  t: (key: string) => string
 ): string {
-  if (isTestingConnection) return 'Testing...'
-  if (testResult?.success) return 'Connection success'
-  if (testResult && !testResult.success) return 'No connection: retry'
-  return 'Test Connection'
+  if (isTestingConnection) return t('settings.mcp.testing')
+  if (testResult?.success) return t('settings.mcp.connectionSuccess')
+  if (testResult && !testResult.success) return t('settings.mcp.noConnection')
+  return t('settings.mcp.testConnection')
 }
 
 interface FormattedInputProps {
@@ -353,8 +354,9 @@ function ServerListItem({
   onRemove,
   onViewDetails,
 }: ServerListItemProps) {
+  const { t } = useTranslation()
   const transportLabel = formatTransportLabel(server.transport || 'http')
-  const toolsLabel = formatToolsLabel(tools, server.connectionStatus)
+  const toolsLabel = formatToolsLabel(tools, server.connectionStatus, t)
   const isError = server.connectionStatus === 'error'
 
   return (
@@ -362,7 +364,7 @@ function ServerListItem({
       <div className='flex min-w-0 flex-col justify-center gap-[1px]'>
         <div className='flex items-center gap-[6px]'>
           <span className='max-w-[200px] truncate font-medium text-[14px]'>
-            {server.name || 'Unnamed Server'}
+            {server.name || t('settings.mcp.unnamedServer')}
           </span>
           <span className='text-[13px] text-[var(--text-secondary)]'>({transportLabel})</span>
         </div>
@@ -370,18 +372,18 @@ function ServerListItem({
           className={`truncate text-[13px] ${isError ? 'text-red-500 dark:text-red-400' : 'text-[var(--text-muted)]'}`}
         >
           {isRefreshing
-            ? 'Refreshing...'
+            ? t('settings.mcp.refreshing')
             : isLoadingTools && tools.length === 0
-              ? 'Loading...'
+              ? t('common.loading')
               : toolsLabel}
         </p>
       </div>
       <div className='flex flex-shrink-0 items-center gap-[4px]'>
         <Button variant='default' onClick={onViewDetails}>
-          Details
+          {t('settings.workflowMcp.tabs.details')}
         </Button>
         <Button variant='ghost' onClick={onRemove} disabled={isDeleting}>
-          {isDeleting ? 'Deleting...' : 'Delete'}
+          {isDeleting ? t('common.deleting') : t('common.delete')}
         </Button>
       </div>
     </div>
@@ -997,7 +999,7 @@ export function MCP({ initialServerId }: MCPProps) {
       const connectionResult = await editTestConnection(serverConfig)
 
       if (!connectionResult.success) {
-        setEditSaveError(connectionResult.error || 'Connection test failed')
+        setEditSaveError(connectionResult.error || t('settings.mcp.connectionTestFailed'))
         return
       }
 
@@ -1019,7 +1021,7 @@ export function MCP({ initialServerId }: MCPProps) {
       setShowEditModal(false)
       logger.info(`Updated MCP server: ${editFormData.name}`)
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to update server'
+      const message = error instanceof Error ? error.message : t('settings.mcp.failedUpdate')
       setEditSaveError(message)
       logger.error('Failed to update MCP server:', error)
     } finally {
@@ -1055,12 +1057,12 @@ export function MCP({ initialServerId }: MCPProps) {
   const isAddDomainBlocked =
     !!formData.url?.trim() && !isDomainAllowed(formData.url, allowedMcpDomains)
   const isSubmitDisabled = serversLoading || isAddingServer || !isFormValid || isAddDomainBlocked
-  const testButtonLabel = getTestButtonLabel(testResult, isTestingConnection)
+  const testButtonLabel = getTestButtonLabel(testResult, isTestingConnection, t)
 
   const isEditFormValid = editFormData.name.trim() && editFormData.url?.trim()
   const isEditDomainBlocked =
     !!editFormData.url?.trim() && !isDomainAllowed(editFormData.url, allowedMcpDomains)
-  const editTestButtonLabel = getTestButtonLabel(editTestResult, isEditTestingConnection)
+  const editTestButtonLabel = getTestButtonLabel(editTestResult, isEditTestingConnection, t)
   const hasEditChanges = useMemo(() => {
     if (editFormData.name !== editOriginalData.name) return true
     if (editFormData.url !== editOriginalData.url) return true
@@ -1136,40 +1138,40 @@ export function MCP({ initialServerId }: MCPProps) {
           <div className='flex flex-col gap-[16px]'>
             <div className='flex flex-col gap-[8px]'>
               <span className='font-medium text-[13px] text-[var(--text-primary)]'>
-                Server Name
+                {t('settings.mcp.serverNameLabel')}
               </span>
               <p className='text-[14px] text-[var(--text-secondary)]'>
-                {server.name || 'Unnamed Server'}
+                {server.name || t('settings.mcp.unnamedServer')}
               </p>
             </div>
 
             <div className='flex flex-col gap-[8px]'>
-              <span className='font-medium text-[13px] text-[var(--text-primary)]'>Transport</span>
+              <span className='font-medium text-[13px] text-[var(--text-primary)]'>{t('settings.workflowMcp.transport')}</span>
               <p className='text-[14px] text-[var(--text-secondary)]'>{transportLabel}</p>
             </div>
 
             {server.url && (
               <div className='flex flex-col gap-[8px]'>
-                <span className='font-medium text-[13px] text-[var(--text-primary)]'>URL</span>
+                <span className='font-medium text-[13px] text-[var(--text-primary)]'>{t('settings.mcp.urlLabel')}</span>
                 <p className='break-all text-[14px] text-[var(--text-secondary)]'>{server.url}</p>
               </div>
             )}
 
             {server.connectionStatus === 'error' && (
               <div className='flex flex-col gap-[8px]'>
-                <span className='font-medium text-[13px] text-[var(--text-primary)]'>Status</span>
+                <span className='font-medium text-[13px] text-[var(--text-primary)]'>{t('common.status')}</span>
                 <p className='text-[14px] text-red-500 dark:text-red-400'>
-                  {server.lastError || 'Unable to connect'}
+                  {server.lastError || t('settings.mcp.unableToConnect')}
                 </p>
               </div>
             )}
 
             <div className='flex flex-col gap-[8px]'>
               <span className='font-medium text-[13px] text-[var(--text-primary)]'>
-                Tools ({tools.length})
+                {t('settings.mcp.toolsWithCount').replace('{count}', String(tools.length))}
               </span>
               {tools.length === 0 ? (
-                <p className='text-[13px] text-[var(--text-muted)]'>No tools available</p>
+                <p className='text-[13px] text-[var(--text-muted)]'>{t('settings.mcp.noToolsAvailable')}</p>
               ) : (
                 <div className='flex flex-col gap-[8px]'>
                   {tools.map((tool) => {
@@ -1213,7 +1215,7 @@ export function MCP({ initialServerId }: MCPProps) {
                                     </div>
                                   </Tooltip.Trigger>
                                   <Tooltip.Content>
-                                    Update in: {affectedWorkflows.join(', ')}
+                                    {t('settings.mcp.updateIn').replace('{workflows}', affectedWorkflows.join(', '))}
                                   </Tooltip.Content>
                                 </Tooltip.Root>
                               )}
@@ -1237,7 +1239,7 @@ export function MCP({ initialServerId }: MCPProps) {
                         {isExpanded && hasParams && (
                           <div className='border-[var(--border-1)] border-t bg-[var(--surface-2)] px-[10px] py-[8px]'>
                             <p className='mb-[6px] font-medium text-[11px] text-[var(--text-muted)] uppercase tracking-wide'>
-                              Parameters
+                              {t('settings.mcp.parameters')}
                             </p>
                             <div className='flex flex-col gap-[6px]'>
                               {Object.entries(tool.inputSchema!.properties!).map(
@@ -1266,7 +1268,7 @@ export function MCP({ initialServerId }: MCPProps) {
                                         </Badge>
                                         {isRequired && (
                                           <Badge variant='default' size='sm'>
-                                            required
+                                            {t('common.required')}
                                           </Badge>
                                         )}
                                       </div>
@@ -1299,19 +1301,22 @@ export function MCP({ initialServerId }: MCPProps) {
               disabled={!!refreshingServers[server.id]}
             >
               {refreshingServers[server.id]?.status === 'refreshing'
-                ? 'Refreshing...'
+                ? t('settings.mcp.refreshing')
                 : refreshingServers[server.id]?.status === 'refreshed'
                   ? refreshingServers[server.id].workflowsUpdated
-                    ? `Synced (${refreshingServers[server.id].workflowsUpdated} workflow${refreshingServers[server.id].workflowsUpdated === 1 ? '' : 's'})`
-                    : 'Refreshed'
-                  : 'Refresh Tools'}
+                    ? (refreshingServers[server.id].workflowsUpdated === 1
+                        ? t('settings.mcp.syncedOne')
+                        : t('settings.mcp.synced')
+                      ).replace('{count}', String(refreshingServers[server.id].workflowsUpdated))
+                    : t('settings.mcp.refreshed')
+                  : t('settings.mcp.refreshTools')}
             </Button>
             <Button onClick={() => handleOpenEditModal(server)} variant='default'>
-              Edit
+              {t('common.edit')}
             </Button>
           </div>
           <Button onClick={handleBackToList} variant='tertiary'>
-            Back
+            {t('common.back')}
           </Button>
         </div>
 
@@ -1320,7 +1325,7 @@ export function MCP({ initialServerId }: MCPProps) {
             <ModalHeader>{t('settings.mcp.editTitle')}</ModalHeader>
             <ModalBody>
               <div className='flex flex-col gap-[8px]'>
-                <FormField label='Server Name'>
+                <FormField label={t('settings.mcp.serverNameLabel')}>
                   <EmcnInput
                     placeholder={t('settings.mcp.serverNamePlaceholder')}
                     value={editFormData.name}
@@ -1332,7 +1337,7 @@ export function MCP({ initialServerId }: MCPProps) {
                   />
                 </FormField>
 
-                <FormField label='Server URL'>
+                <FormField label={t('settings.mcp.serverUrlLabel')}>
                   <FormattedInput
                     placeholder='https://mcp.server.dev/{{YOUR_API_KEY}}/sse'
                     value={editFormData.url || ''}
@@ -1351,7 +1356,7 @@ export function MCP({ initialServerId }: MCPProps) {
                   />
                   {isEditDomainBlocked && (
                     <p className='mt-[4px] text-[12px] text-[var(--text-error)]'>
-                      Domain not permitted by server policy
+                      {t('settings.mcp.domainNotPermitted')}
                     </p>
                   )}
                 </FormField>
@@ -1359,7 +1364,7 @@ export function MCP({ initialServerId }: MCPProps) {
                 <div className='flex flex-col gap-[8px]'>
                   <div className='flex items-center justify-between'>
                     <span className='font-medium text-[13px] text-[var(--text-secondary)]'>
-                      Headers
+                      {t('settings.mcp.headers')}
                     </span>
                     <Button
                       type='button'
@@ -1461,7 +1466,7 @@ export function MCP({ initialServerId }: MCPProps) {
         {shouldShowForm && !serversLoading && (
           <div className='rounded-[8px] border p-[10px]'>
             <div className='flex flex-col gap-[8px]'>
-              <FormField label='Server Name'>
+              <FormField label={t('settings.mcp.serverNameLabel')}>
                 <EmcnInput
                   placeholder={t('settings.mcp.serverNamePlaceholder')}
                   value={formData.name}
@@ -1473,7 +1478,7 @@ export function MCP({ initialServerId }: MCPProps) {
                 />
               </FormField>
 
-              <FormField label='Server URL'>
+              <FormField label={t('settings.mcp.serverUrlLabel')}>
                 <FormattedInput
                   ref={urlInputRef}
                   placeholder='https://mcp.server.dev/{{YOUR_API_KEY}}/sse'
@@ -1493,7 +1498,7 @@ export function MCP({ initialServerId }: MCPProps) {
                 />
                 {isAddDomainBlocked && (
                   <p className='mt-[4px] text-[12px] text-[var(--text-error)]'>
-                    Domain not permitted by server policy
+                    {t('settings.mcp.domainNotPermitted')}
                   </p>
                 )}
               </FormField>
@@ -1501,7 +1506,7 @@ export function MCP({ initialServerId }: MCPProps) {
               <div className='flex flex-col gap-[8px]'>
                 <div className='flex items-center justify-between'>
                   <span className='font-medium text-[13px] text-[var(--text-secondary)]'>
-                    Headers
+                    {t('settings.mcp.headers')}
                   </span>
                   <Button
                     type='button'
@@ -1552,8 +1557,8 @@ export function MCP({ initialServerId }: MCPProps) {
                   </Button>
                   <Button onClick={handleAddServer} disabled={isSubmitDisabled} variant='tertiary'>
                     {isSubmitDisabled && isFormValid && !isAddDomainBlocked
-                      ? 'Adding...'
-                      : 'Add Server'}
+                      ? t('settings.mcp.adding')
+                      : t('settings.mcp.addServer')}
                   </Button>
                 </div>
               </div>
@@ -1565,7 +1570,7 @@ export function MCP({ initialServerId }: MCPProps) {
           {error ? (
             <div className='flex h-full flex-col items-center justify-center gap-[8px]'>
               <p className='text-[#DC2626] text-[11px] leading-tight dark:text-[#F87171]'>
-                {error instanceof Error ? error.message : 'Failed to load MCP servers'}
+                {error instanceof Error ? error.message : t('settings.mcp.failedLoad')}
               </p>
             </div>
           ) : serversLoading ? (
@@ -1589,14 +1594,14 @@ export function MCP({ initialServerId }: MCPProps) {
                     isDeleting={deletingServers.has(server.id)}
                     isLoadingTools={isLoadingTools}
                     isRefreshing={refreshingServers[server.id]?.status === 'refreshing'}
-                    onRemove={() => handleRemoveServer(server.id, server.name || 'this server')}
+                    onRemove={() => handleRemoveServer(server.id, server.name || t('settings.mcp.thisServer'))}
                     onViewDetails={() => handleViewDetails(server.id)}
                   />
                 )
               })}
               {showNoResults && (
                 <div className='py-[16px] text-center text-[13px] text-[var(--text-muted)]'>
-                  No servers found matching "{searchTerm}"
+                  {t('settings.mcp.noResults').replace('{term}', searchTerm)}
                 </div>
               )}
             </div>
@@ -1609,9 +1614,9 @@ export function MCP({ initialServerId }: MCPProps) {
           <ModalHeader>{t('settings.mcp.deleteTitle')}</ModalHeader>
           <ModalBody>
             <p className='text-[12px] text-[var(--text-secondary)]'>
-              Are you sure you want to delete{' '}
+              {t('common.deleteConfirm')}{' '}
               <span className='font-medium text-[var(--text-primary)]'>{serverToDelete?.name}</span>
-              ? <span className='text-[var(--text-error)]'>This action cannot be undone.</span>
+              ? <span className='text-[var(--text-error)]'>{t('common.cannotBeUndone')}</span>
             </p>
           </ModalBody>
           <ModalFooter>
